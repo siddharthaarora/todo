@@ -1,5 +1,5 @@
 {
-  "name": "@todo-app/server",
+  "name": "@prodigy-app/server",
   "version": "1.0.0",
   "private": true,
   "scripts": {
