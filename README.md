@@ -1,4 +1,4 @@
-# Cross-Platform Todo App
+# Prodigy - Cross-Platform Todo App
 
 A modern, feature-rich todo application built for web, iOS, and Android platforms. This app provides a seamless experience across all devices, similar to Microsoft Todo, with a focus on simplicity and productivity.
 
@@ -39,7 +39,7 @@ A modern, feature-rich todo application built for web, iOS, and Android platform
 1. Clone the repository:
    ```bash
    git clone [repository-url]
-   cd todo
+   cd prodigy
    ```
 
 2. Install dependencies:
@@ -70,7 +70,7 @@ A modern, feature-rich todo application built for web, iOS, and Android platform
 ## Project Structure
 
 ```
-todo/
+prodigy/
 ├── web/                 # Web application
 ├── mobile/             # Mobile application (iOS & Android)
 ├── server/             # Backend server
