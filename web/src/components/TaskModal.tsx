@@ -145,7 +145,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
   const [formData, setFormData] = useState<Partial<Task>>({
     title: '',
     description: '',
-    priority: 'medium',
     dueDate: undefined,
     category: '',
   });
@@ -155,7 +154,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
       setFormData({
         title: task.title,
         description: task.description,
-        priority: task.priority,
         dueDate: task.dueDate,
         category: task.category,
       });
@@ -163,7 +161,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
       setFormData({
         title: '',
         description: '',
-        priority: 'medium',
         dueDate: undefined,
         category: '',
       });
@@ -177,9 +174,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
       title: formData.title ?? '',
       description: formData.description,
       completed: task?.completed ?? false,
-      priority: formData.priority ?? 'medium',
       dueDate: formData.dueDate,
       category: formData.category,
+      userId: 'default-user',
       createdAt: task?.createdAt ?? new Date(),
       updatedAt: new Date(),
     };
@@ -225,20 +222,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
               value={formData.description}
               onChange={handleChange}
             />
-          </FormGroup>
-
-          <FormGroup>
-            <Label htmlFor="priority">Priority</Label>
-            <Select
-              id="priority"
-              name="priority"
-              value={formData.priority}
-              onChange={handleChange}
-            >
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-            </Select>
           </FormGroup>
 
           <FormGroup>

@@ -9,6 +9,7 @@ interface TaskListProps {
   onEditTask: (task: Task) => void;
   onDeleteTask: (taskId: string) => void;
   onToggleComplete: (taskId: string) => void;
+  onAddTask: (task: Task) => void;
 }
 
 const Container = styled.div`
@@ -16,6 +17,25 @@ const Container = styled.div`
   border-radius: ${({ theme }) => theme.borderRadius.lg};
   box-shadow: ${({ theme }) => theme.shadows.md};
   padding: ${({ theme }) => theme.spacing.lg};
+`;
+
+const QuickAddInput = styled.input`
+  width: 100%;
+  padding: ${({ theme }) => theme.spacing.md};
+  border: 1px solid ${({ theme }) => theme.colors.gray[300]};
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
+  transition: border-color ${({ theme }) => theme.transitions.fast};
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.colors.primary};
+  }
+
+  &::placeholder {
+    color: ${({ theme }) => theme.colors.gray[400]};
+  }
 `;
 
 const Header = styled.div`
@@ -56,15 +76,32 @@ const TaskList: React.FC<TaskListProps> = ({
   onEditTask,
   onDeleteTask,
   onToggleComplete,
+  onAddTask,
 }) => {
-  const [sortBy, setSortBy] = useState<SortOption>('priority');
+  const [sortBy, setSortBy] = useState<SortOption>('dueDate');
   const [filterBy, setFilterBy] = useState<FilterOption>('all');
+  const [quickAddText, setQuickAddText] = useState('');
+
+  const handleQuickAdd = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && quickAddText.trim()) {
+      const newTask: Task = {
+        id: Date.now().toString(),
+        title: quickAddText.trim(),
+        description: '',
+        completed: false,
+        dueDate: undefined,
+        category: '',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      onAddTask(newTask);
+      setQuickAddText('');
+    }
+  };
 
   const sortTasks = (tasks: Task[]): Task[] => {
     return [...tasks].sort((a, b) => {
       switch (sortBy) {
-        case 'priority':
-          return getPriorityWeight(b.priority) - getPriorityWeight(a.priority);
         case 'dueDate':
           return (a.dueDate?.getTime() ?? 0) - (b.dueDate?.getTime() ?? 0);
         case 'category':
@@ -115,6 +152,13 @@ const TaskList: React.FC<TaskListProps> = ({
 
   return (
     <Container>
+      <QuickAddInput
+        type="text"
+        placeholder="Quick add a task (press Enter to add)"
+        value={quickAddText}
+        onChange={(e) => setQuickAddText(e.target.value)}
+        onKeyDown={handleQuickAdd}
+      />
       <Header>
         <Title>Tasks</Title>
         <Controls>
@@ -122,7 +166,6 @@ const TaskList: React.FC<TaskListProps> = ({
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as SortOption)}
           >
-            <option value="priority">Sort by Priority</option>
             <option value="dueDate">Sort by Due Date</option>
             <option value="category">Sort by Category</option>
             <option value="createdAt">Sort by Created Date</option>

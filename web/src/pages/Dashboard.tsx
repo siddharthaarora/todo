@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import TaskList from '../components/TaskList';
 import AddTaskButton from '../components/AddTaskButton';
 import TaskModal from '../components/TaskModal';
 import ProgressTracker from '../components/ProgressTracker';
 import { Task } from '../types';
+import api from '../services/api';
 
 const DashboardContainer = styled.div`
   max-width: 1200px;
@@ -39,6 +40,20 @@ const Dashboard: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const userId = 'default-user'; // In a real app, this would come from auth
+
+  useEffect(() => {
+    loadTasks();
+  }, []);
+
+  const loadTasks = async () => {
+    try {
+      const response = await api.getTasks(userId);
+      setTasks(response.tasks);
+    } catch (error) {
+      console.error('Error loading tasks:', error);
+    }
+  };
 
   const handleAddTask = () => {
     setSelectedTask(null);
@@ -55,25 +70,52 @@ const Dashboard: React.FC = () => {
     setSelectedTask(null);
   };
 
-  const handleSaveTask = (task: Task) => {
-    if (selectedTask) {
-      setTasks(tasks.map(t => t.id === task.id ? task : t));
-    } else {
-      setTasks([...tasks, { ...task, id: Date.now().toString() }]);
+  const handleSaveTask = async (task: Task) => {
+    try {
+      if (selectedTask) {
+        // Update existing task
+        const updatedTask = await api.updateTask(task.id, {
+          title: task.title,
+          description: task.description,
+          category: task.category,
+          dueDate: task.dueDate?.toISOString(),
+          completed: task.completed,
+        });
+        setTasks(tasks.map(t => t.id === task.id ? updatedTask : t));
+      } else {
+        // Create new task
+        const newTask = await api.createTask({
+          title: task.title,
+          description: task.description,
+          category: task.category,
+          dueDate: task.dueDate?.toISOString(),
+        }, userId);
+        setTasks([...tasks, newTask]);
+      }
+      handleCloseModal();
+    } catch (error) {
+      console.error('Error saving task:', error);
     }
-    handleCloseModal();
   };
 
-  const handleDeleteTask = (taskId: string) => {
-    setTasks(tasks.filter(t => t.id !== taskId));
+  const handleDeleteTask = async (taskId: string) => {
+    try {
+      await api.deleteTask(taskId);
+      setTasks(tasks.filter(t => t.id !== taskId));
+    } catch (error) {
+      console.error('Error deleting task:', error);
+    }
   };
 
-  const handleToggleComplete = (taskId: string) => {
-    setTasks(tasks.map(task =>
-      task.id === taskId
-        ? { ...task, completed: !task.completed }
-        : task
-    ));
+  const handleToggleComplete = async (taskId: string) => {
+    try {
+      const updatedTask = await api.toggleTaskCompletion(taskId);
+      setTasks(tasks.map(task =>
+        task.id === taskId ? updatedTask : task
+      ));
+    } catch (error) {
+      console.error('Error toggling task completion:', error);
+    }
   };
 
   return (
@@ -89,6 +131,7 @@ const Dashboard: React.FC = () => {
           onEditTask={handleEditTask}
           onDeleteTask={handleDeleteTask}
           onToggleComplete={handleToggleComplete}
+          onAddTask={handleSaveTask}
         />
         <ProgressTracker tasks={tasks} />
       </MainContent>
