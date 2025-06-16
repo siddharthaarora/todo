@@ -19,13 +19,18 @@ const Container = styled.div`
   padding: ${({ theme }) => theme.spacing.lg};
 `;
 
+const QuickAddContainer = styled.div`
+  position: relative;
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
+`;
+
 const QuickAddInput = styled.input`
   width: 100%;
   padding: ${({ theme }) => theme.spacing.md};
+  padding-right: 48px;
   border: 1px solid ${({ theme }) => theme.colors.gray[300]};
   border-radius: ${({ theme }) => theme.borderRadius.md};
   font-size: ${({ theme }) => theme.typography.fontSize.base};
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
   transition: border-color ${({ theme }) => theme.transitions.fast};
 
   &:focus {
@@ -35,6 +40,33 @@ const QuickAddInput = styled.input`
 
   &::placeholder {
     color: ${({ theme }) => theme.colors.gray[400]};
+  }
+`;
+
+const AddButton = styled.button`
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: ${({ theme }) => theme.colors.primary};
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.primary};
+    opacity: 0.8;
+  }
+
+  &:disabled {
+    color: ${({ theme }) => theme.colors.gray[400]};
+    cursor: not-allowed;
   }
 `;
 
@@ -82,8 +114,8 @@ const TaskList: React.FC<TaskListProps> = ({
   const [filterBy, setFilterBy] = useState<FilterOption>('all');
   const [quickAddText, setQuickAddText] = useState('');
 
-  const handleQuickAdd = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && quickAddText.trim()) {
+  const handleQuickAdd = () => {
+    if (quickAddText.trim()) {
       const newTask: Task = {
         id: Date.now().toString(),
         title: quickAddText.trim(),
@@ -91,11 +123,18 @@ const TaskList: React.FC<TaskListProps> = ({
         completed: false,
         dueDate: undefined,
         category: '',
+        userId: 'default-user',
         createdAt: new Date(),
         updatedAt: new Date(),
       };
       onAddTask(newTask);
       setQuickAddText('');
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && quickAddText.trim()) {
+      handleQuickAdd();
     }
   };
 
@@ -152,13 +191,23 @@ const TaskList: React.FC<TaskListProps> = ({
 
   return (
     <Container>
-      <QuickAddInput
-        type="text"
-        placeholder="Quick add a task (press Enter to add)"
-        value={quickAddText}
-        onChange={(e) => setQuickAddText(e.target.value)}
-        onKeyDown={handleQuickAdd}
-      />
+      <QuickAddContainer>
+        <QuickAddInput
+          type="text"
+          placeholder="Quick add a task (press Enter to add)"
+          value={quickAddText}
+          onChange={(e) => setQuickAddText(e.target.value)}
+          onKeyDown={handleKeyDown}
+        />
+        <AddButton
+          onClick={handleQuickAdd}
+          disabled={!quickAddText.trim()}
+          aria-label="Add task"
+        >
+          +
+        </AddButton>
+      </QuickAddContainer>
+
       <Header>
         <Title>Tasks</Title>
         <Controls>
