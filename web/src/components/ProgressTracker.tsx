@@ -62,46 +62,12 @@ const StatLabel = styled.div`
   color: ${({ theme }) => theme.colors.gray[600]};
 `;
 
-const PriorityStats = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.sm};
-`;
-
-const PriorityItem = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: ${({ theme }) => theme.spacing.sm};
-  background-color: ${({ theme }) => theme.colors.gray[100]};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-`;
-
-const PriorityLabel = styled.span`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.gray[700]};
-`;
-
-const PriorityCount = styled.span`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  color: ${({ theme }) => theme.colors.gray[900]};
-`;
-
 const ProgressTracker: React.FC<ProgressTrackerProps> = ({ tasks }) => {
   const totalTasks = tasks.length;
   const completedTasks = tasks.filter(task => task.completed).length;
   const completionPercentage = totalTasks > 0
     ? Math.round((completedTasks / totalTasks) * 100)
     : 0;
-
-  const priorityCounts = tasks.reduce(
-    (acc, task) => {
-      acc[task.priority]++;
-      return acc;
-    },
-    { high: 0, medium: 0, low: 0 }
-  );
 
   return (
     <Container>
@@ -120,22 +86,6 @@ const ProgressTracker: React.FC<ProgressTrackerProps> = ({ tasks }) => {
           <StatLabel>Completed</StatLabel>
         </StatItem>
       </Stats>
-
-      <Title>Priority Distribution</Title>
-      <PriorityStats>
-        <PriorityItem>
-          <PriorityLabel>High Priority</PriorityLabel>
-          <PriorityCount>{priorityCounts.high}</PriorityCount>
-        </PriorityItem>
-        <PriorityItem>
-          <PriorityLabel>Medium Priority</PriorityLabel>
-          <PriorityCount>{priorityCounts.medium}</PriorityCount>
-        </PriorityItem>
-        <PriorityItem>
-          <PriorityLabel>Low Priority</PriorityLabel>
-          <PriorityCount>{priorityCounts.low}</PriorityCount>
-        </PriorityItem>
-      </PriorityStats>
     </Container>
   );
 };

@@ -58,26 +58,6 @@ const Meta = styled.div`
   color: ${({ theme }) => theme.colors.gray[500]};
 `;
 
-const PriorityBadge = styled.span<{ priority: Task['priority'] }>`
-  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
-  border-radius: ${({ theme }) => theme.borderRadius.full};
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  background-color: ${({ theme, priority }) => {
-    switch (priority) {
-      case 'high':
-        return theme.colors.danger;
-      case 'medium':
-        return theme.colors.warning;
-      case 'low':
-        return theme.colors.success;
-      default:
-        return theme.colors.gray[300];
-    }
-  }};
-  color: ${({ theme }) => theme.colors.white};
-`;
-
 const Actions = styled.div`
   display: flex;
   gap: ${({ theme }) => theme.spacing.sm};
@@ -117,9 +97,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
             <span>Due: {task.dueDate.toLocaleDateString()}</span>
           )}
           {task.category && <span>Category: {task.category}</span>}
-          <PriorityBadge priority={task.priority}>
-            {task.priority}
-          </PriorityBadge>
         </Meta>
       </Content>
       <Actions>

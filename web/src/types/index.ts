@@ -4,8 +4,8 @@ export interface Task {
   description?: string;
   completed: boolean;
   dueDate?: Date;
-  priority: 'low' | 'medium' | 'high';
   category?: string;
+  userId: string;
   attachments?: Attachment[];
   reminders?: Reminder[];
   createdAt: Date;
@@ -33,5 +33,5 @@ export interface Category {
   color: string;
 }
 
-export type SortOption = 'priority' | 'dueDate' | 'category' | 'createdAt';
+export type SortOption = 'dueDate' | 'category' | 'createdAt';
 export type FilterOption = 'all' | 'active' | 'completed'; 
