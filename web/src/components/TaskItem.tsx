@@ -80,12 +80,22 @@ const TaskItem: React.FC<TaskItemProps> = ({
   onDelete,
   onToggleComplete,
 }) => {
+  const handleToggleComplete = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('Toggle complete clicked for task:', task._id);
+    onToggleComplete();
+  };
+
+  const handleDelete = (e: React.MouseEvent<HTMLButtonElement>) => {
+    console.log('Delete clicked for task:', task._id);
+    onDelete();
+  };
+
   return (
     <Container completed={task.completed}>
       <Checkbox
         type="checkbox"
         checked={task.completed}
-        onChange={onToggleComplete}
+        onChange={handleToggleComplete}
       />
       <Content>
         <Title completed={task.completed}>{task.title}</Title>
@@ -94,7 +104,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
         )}
         <Meta>
           {task.dueDate && (
-            <span>Due: {task.dueDate.toLocaleDateString()}</span>
+            <span>Due: {new Date(task.dueDate).toLocaleDateString()}</span>
           )}
           {task.category && <span>Category: {task.category}</span>}
         </Meta>
@@ -103,7 +113,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
         <ActionButton onClick={onEdit} aria-label="Edit task">
           ✏️
         </ActionButton>
-        <ActionButton onClick={onDelete} aria-label="Delete task">
+        <ActionButton onClick={handleDelete} aria-label="Delete task">
           🗑️
         </ActionButton>
       </Actions>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Task } from '../types';
+import { useAuth } from '../contexts/AuthContext';
 
 interface TaskModalProps {
   isOpen: boolean;
@@ -142,10 +143,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
   onSave,
   task,
 }) => {
+  const { user } = useAuth();
   const [formData, setFormData] = useState<Partial<Task>>({
     title: '',
     description: '',
-    dueDate: undefined,
+    dueDate: new Date().toISOString(),
     category: '',
   });
 
@@ -161,25 +163,47 @@ const TaskModal: React.FC<TaskModalProps> = ({
       setFormData({
         title: '',
         description: '',
-        dueDate: undefined,
+        dueDate: new Date().toISOString(),
         category: '',
       });
     }
   }, [task]);
 
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isOpen, onClose]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) return;
+    
+    console.log('Form submitted with data:', formData);
+    console.log('Current task:', task);
+    
     const newTask: Task = {
-      id: task?.id ?? Date.now().toString(),
+      _id: task?._id ?? Date.now().toString(),
       title: formData.title ?? '',
-      description: formData.description,
+      description: formData.description ?? '',
       completed: task?.completed ?? false,
-      dueDate: formData.dueDate,
-      category: formData.category,
-      userId: 'default-user',
-      createdAt: task?.createdAt ?? new Date(),
-      updatedAt: new Date(),
+      dueDate: formData.dueDate ?? new Date().toISOString(),
+      category: formData.category ?? '',
+      userId: user.id,
+      createdAt: task?.createdAt ?? new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
+    console.log('Sending task to parent:', newTask);
     onSave(newTask);
   };
 
@@ -192,6 +216,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
       [name]: value,
     }));
   };
+
+  if (!isOpen) return null;
 
   return (
     <ModalOverlay isOpen={isOpen}>
@@ -230,7 +256,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
               type="datetime-local"
               id="dueDate"
               name="dueDate"
-              value={formData.dueDate?.toISOString().slice(0, 16)}
+              value={formData.dueDate ? new Date(formData.dueDate).toISOString().slice(0, 16) : ''}
               onChange={handleChange}
             />
           </FormGroup>

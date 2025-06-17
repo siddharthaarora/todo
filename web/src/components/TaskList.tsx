@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { Task, SortOption, FilterOption } from '../types';
@@ -113,19 +113,24 @@ const TaskList: React.FC<TaskListProps> = ({
   const [sortBy, setSortBy] = useState<SortOption>('dueDate');
   const [filterBy, setFilterBy] = useState<FilterOption>('all');
   const [quickAddText, setQuickAddText] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   const handleQuickAdd = () => {
     if (quickAddText.trim()) {
       const newTask: Task = {
-        id: Date.now().toString(),
+        _id: Date.now().toString(),
         title: quickAddText.trim(),
         description: '',
         completed: false,
-        dueDate: undefined,
+        dueDate: new Date().toISOString(),
         category: '',
         userId: 'default-user',
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
       onAddTask(newTask);
       setQuickAddText('');
@@ -142,11 +147,13 @@ const TaskList: React.FC<TaskListProps> = ({
     return [...tasks].sort((a, b) => {
       switch (sortBy) {
         case 'dueDate':
-          return (a.dueDate?.getTime() ?? 0) - (b.dueDate?.getTime() ?? 0);
+          const dateA = a.dueDate ? new Date(a.dueDate).getTime() : 0;
+          const dateB = b.dueDate ? new Date(b.dueDate).getTime() : 0;
+          return dateA - dateB;
         case 'category':
           return (a.category ?? '').localeCompare(b.category ?? '');
         case 'createdAt':
-          return b.createdAt.getTime() - a.createdAt.getTime();
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         default:
           return 0;
       }
@@ -193,6 +200,7 @@ const TaskList: React.FC<TaskListProps> = ({
     <Container>
       <QuickAddContainer>
         <QuickAddInput
+          ref={inputRef}
           type="text"
           placeholder="Quick add a task (press Enter to add)"
           value={quickAddText}
@@ -235,7 +243,7 @@ const TaskList: React.FC<TaskListProps> = ({
           {(provided) => (
             <div {...provided.droppableProps} ref={provided.innerRef}>
               {sortedAndFilteredTasks.map((task, index) => (
-                <Draggable key={task.id} draggableId={task.id} index={index}>
+                <Draggable key={task._id} draggableId={task._id} index={index}>
                   {(provided) => (
                     <div
                       ref={provided.innerRef}
@@ -245,8 +253,8 @@ const TaskList: React.FC<TaskListProps> = ({
                       <TaskItem
                         task={task}
                         onEdit={() => onEditTask(task)}
-                        onDelete={() => onDeleteTask(task.id)}
-                        onToggleComplete={() => onToggleComplete(task.id)}
+                        onDelete={() => onDeleteTask(task._id)}
+                        onToggleComplete={() => onToggleComplete(task._id)}
                       />
                     </div>
                   )}
