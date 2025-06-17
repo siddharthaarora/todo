@@ -43,19 +43,19 @@ const api = {
   },
 
   // Update a task
-  updateTask: async (taskId: string, updates: UpdateTaskInput) => {
-    const response = await axios.put(`${API_URL}/tasks/${taskId}`, updates);
+  updateTask: async (taskId: string, updates: UpdateTaskInput, userId: string) => {
+    const response = await axios.put(`${API_URL}/tasks/${taskId}`, { ...updates, userId });
     return response.data;
   },
 
   // Delete a task
-  deleteTask: async (taskId: string) => {
-    await axios.delete(`${API_URL}/tasks/${taskId}`);
+  deleteTask: async (taskId: string, userId: string) => {
+    await axios.delete(`${API_URL}/tasks/${taskId}?userId=${userId}`);
   },
 
   // Toggle task completion
-  toggleTaskCompletion: async (taskId: string) => {
-    const response = await axios.patch(`${API_URL}/tasks/${taskId}/toggle`);
+  toggleTaskCompletion: async (taskId: string, userId: string) => {
+    const response = await axios.patch(`${API_URL}/tasks/${taskId}/toggle?userId=${userId}`);
     return response.data;
   },
 };
