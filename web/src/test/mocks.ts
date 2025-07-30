@@ -49,19 +49,6 @@ vi.mock('axios', () => ({
   default: mockAxios,
 }));
 
-// Mock API service
-export const mockApi = {
-  getTasks: vi.fn().mockResolvedValue({ tasks: [] }),
-  createTask: vi.fn().mockResolvedValue({}),
-  updateTask: vi.fn().mockResolvedValue({}),
-  deleteTask: vi.fn().mockResolvedValue(undefined),
-  toggleTaskCompletion: vi.fn().mockResolvedValue({}),
-};
-
-vi.mock('../services/api', () => ({
-  default: mockApi,
-}));
-
 // Mock theme
 export const mockTheme = {
   colors: {
@@ -144,10 +131,5 @@ export const resetMocks = () => {
   mockAxios.put.mockReset();
   mockAxios.delete.mockReset();
   mockAxios.patch.mockReset();
-  mockApi.getTasks.mockReset();
-  mockApi.createTask.mockReset();
-  mockApi.updateTask.mockReset();
-  mockApi.deleteTask.mockReset();
-  mockApi.toggleTaskCompletion.mockReset();
   mockNavigate.mockReset();
 }; 
