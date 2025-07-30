@@ -25,12 +25,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     // Check for token in localStorage on mount
     const storedToken = localStorage.getItem('token');
-    console.log('Checking stored token:', storedToken ? 'Found' : 'Not found');
     
     if (storedToken) {
       try {
         const decoded = jwtDecode<User>(storedToken);
-        console.log('Decoded user from stored token:', decoded);
         setUser(decoded);
         setToken(storedToken);
       } catch (error) {
@@ -42,13 +40,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = (newToken: string) => {
     try {
-      console.log('Attempting to login with token');
       const decoded = jwtDecode<User>(newToken);
-      console.log('Decoded user from new token:', decoded);
       setUser(decoded);
       setToken(newToken);
       localStorage.setItem('token', newToken);
-      console.log('Login successful, user set:', decoded);
     } catch (error) {
       console.error('Error during login:', error);
     }
@@ -62,7 +57,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-  console.log('Using Google Client ID:', clientId);
+  console.log('Client ID from env:', clientId);
+  console.log('Current origin:', window.location.origin);
+  console.log('Full URL:', window.location.href);
 
   return (
     <GoogleOAuthProvider clientId={clientId}>

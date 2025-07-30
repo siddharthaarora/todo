@@ -83,7 +83,9 @@ describe('TaskList', () => {
       // Check if date headers are rendered - use more flexible matching
       expect(screen.getByText('Today')).toBeInTheDocument();
       // The component might show a formatted date instead of "Tomorrow"
-      const tomorrowElement = screen.queryByText('Tomorrow') || screen.queryByText(/Tomorrow/i);
+      // Look for "Tomorrow" in heading elements specifically to avoid conflicts with task descriptions
+      const tomorrowElement = screen.queryByText('Tomorrow', { selector: 'h3' }) || 
+                             screen.queryByText(/Tomorrow/i, { selector: 'h3' });
       if (!tomorrowElement) {
         // If "Tomorrow" is not found, check for a date header that contains tomorrow's date
         const tomorrowDate = new Date(Date.now() + 24 * 60 * 60 * 1000);

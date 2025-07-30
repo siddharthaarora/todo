@@ -3,7 +3,7 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/User';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+const getJwtSecret = () => process.env.JWT_SECRET || 'your-secret-key';
 
 export const configurePassport = () => {
   passport.use(
@@ -57,14 +57,14 @@ export const generateToken = (user: any) => {
       email: user.email,
       name: user.name,
     },
-    JWT_SECRET,
+    getJwtSecret(),
     { expiresIn: '7d' }
   );
 };
 
 export const verifyToken = (token: string) => {
   try {
-    return jwt.verify(token, JWT_SECRET);
+    return jwt.verify(token, getJwtSecret());
   } catch (error) {
     return null;
   }
