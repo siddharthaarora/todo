@@ -3,15 +3,17 @@ import { describe, it, expect } from 'vitest';
 describe('Date Utilities', () => {
   describe('date grouping logic', () => {
     it('should identify today correctly', () => {
-      const isToday = (date: string) => {
+      const isToday = (date: Date) => {
         const today = new Date();
-        const dateToCheck = new Date(date);
-        return dateToCheck.toDateString() === today.toDateString();
+        return date.toDateString() === today.toDateString();
       };
 
-      const today = new Date().toISOString().split('T')[0];
-      const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      // Use date objects directly to avoid timezone issues
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
 
       expect(isToday(today)).toBe(true);
       expect(isToday(tomorrow)).toBe(false);
@@ -19,15 +21,17 @@ describe('Date Utilities', () => {
     });
 
     it('should identify tomorrow correctly', () => {
-      const isTomorrow = (date: string) => {
-        const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
-        const dateToCheck = new Date(date);
-        return dateToCheck.toDateString() === tomorrow.toDateString();
+      const isTomorrow = (date: Date) => {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        return date.toDateString() === tomorrow.toDateString();
       };
 
-      const today = new Date().toISOString().split('T')[0];
-      const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-      const dayAfterTomorrow = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+      const dayAfterTomorrow = new Date(today);
+      dayAfterTomorrow.setDate(today.getDate() + 2);
 
       expect(isTomorrow(tomorrow)).toBe(true);
       expect(isTomorrow(today)).toBe(false);
@@ -35,15 +39,16 @@ describe('Date Utilities', () => {
     });
 
     it('should identify overdue tasks correctly', () => {
-      const isOverdue = (date: string) => {
+      const isOverdue = (date: Date) => {
         const today = new Date();
-        const dueDate = new Date(date);
-        return dueDate < today && dueDate.toDateString() !== today.toDateString();
+        return date < today && date.toDateString() !== today.toDateString();
       };
 
-      const today = new Date().toISOString().split('T')[0];
-      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-      const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      const today = new Date();
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
 
       expect(isOverdue(yesterday)).toBe(true);
       expect(isOverdue(today)).toBe(false);
@@ -131,9 +136,8 @@ describe('Date Utilities', () => {
 
   describe('relative date formatting', () => {
     it('should format relative dates correctly', () => {
-      const getRelativeDate = (dateString: string) => {
+      const getRelativeDate = (date: Date) => {
         const today = new Date();
-        const date = new Date(dateString);
         const diffTime = date.getTime() - today.getTime();
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
@@ -149,10 +153,13 @@ describe('Date Utilities', () => {
         });
       };
 
-      const today = new Date().toISOString().split('T')[0];
-      const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-      const futureDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
+      const futureDate = new Date(today);
+      futureDate.setDate(today.getDate() + 7);
 
       expect(getRelativeDate(today)).toBe('Today');
       expect(getRelativeDate(tomorrow)).toBe('Tomorrow');

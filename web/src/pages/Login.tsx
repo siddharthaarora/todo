@@ -42,7 +42,6 @@ const Login: React.FC = () => {
 
   const handleGoogleSuccess = async (credentialResponse: any) => {
     try {
-      console.log('Google response received:', credentialResponse);
       const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/google`, {
         method: 'POST',
         headers: {
@@ -53,18 +52,14 @@ const Login: React.FC = () => {
         }),
       });
 
-      console.log('Auth response status:', response.status);
       const data = await response.json();
-      console.log('Auth response data:', data);
 
       if (!response.ok) {
         throw new Error(data.message || 'Authentication failed');
       }
 
       if (data.token) {
-        console.log('Token received, logging in...');
         login(data.token);
-        console.log('Login successful, redirecting to dashboard...');
         navigate('/dashboard', { replace: true });
       } else {
         console.error('No token in response');

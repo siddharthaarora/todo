@@ -10,17 +10,15 @@ export default defineConfig({
     },
   },
   server: {
-    port: 5173,
+    port: 3000,
     open: true,
   },
   build: {
     outDir: 'dist',
     sourcemap: true,
   },
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./src/test/setup.ts'],
-    css: true,
+  define: {
+    'import.meta.env.VITE_GOOGLE_CLIENT_ID': JSON.stringify('647630028904-tvkvo6pn6oqcgaj90rfu82aqff16ak8j.apps.googleusercontent.com'),
+    'import.meta.env.VITE_API_URL': JSON.stringify('http://localhost:3001/api'),
   },
 }) 
