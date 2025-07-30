@@ -1,6 +1,6 @@
 import { Task } from '../types';
 
-const STORAGE_KEY = 'prodigy_tasks';
+const STORAGE_KEY = 'proxyc_tasks';
 
 export const taskService = {
   getTasks: (): Task[] => {

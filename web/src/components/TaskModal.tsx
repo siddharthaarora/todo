@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Task } from '../types';
+import { Task } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 
 interface TaskModalProps {
@@ -10,7 +10,9 @@ interface TaskModalProps {
   task?: Task | null;
 }
 
-const ModalOverlay = styled.div<{ isOpen: boolean }>`
+const ModalOverlay = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== 'isOpen'
+})<{ isOpen: boolean }>`
   position: fixed;
   top: 0;
   left: 0;
@@ -120,7 +122,9 @@ const ButtonGroup = styled.div`
   margin-top: ${({ theme }) => theme.spacing.lg};
 `;
 
-const Button = styled.button<{ variant?: 'primary' | 'secondary' }>`
+const Button = styled.button.withConfig({
+  shouldForwardProp: (prop) => prop !== 'variant'
+})<{ variant?: 'primary' | 'secondary' }>`
   padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.lg};
   border-radius: ${({ theme }) => theme.borderRadius.md};
   font-size: ${({ theme }) => theme.typography.fontSize.base};

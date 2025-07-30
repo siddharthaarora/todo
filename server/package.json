@@ -1,5 +1,5 @@
 {
-  "name": "@prodigy-app/server",
+  "name": "@proxyc-app/server",
   "version": "1.0.0",
   "private": true,
   "scripts": {

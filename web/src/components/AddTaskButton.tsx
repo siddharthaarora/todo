@@ -6,34 +6,37 @@ interface AddTaskButtonProps {
 }
 
 const Button = styled.button`
-  position: fixed;
-  bottom: ${({ theme }) => theme.spacing.xl};
-  right: ${({ theme }) => theme.spacing.xl};
-  width: 56px;
-  height: 56px;
-  border-radius: ${({ theme }) => theme.borderRadius.full};
-  background-color: ${({ theme }) => theme.colors.primary};
-  color: ${({ theme }) => theme.colors.white};
+  width: 100%;
+  height: 48px;
+  border-radius: 0.375rem;
+  background-color: #2563eb;
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
-  box-shadow: ${({ theme }) => theme.shadows.lg};
-  transition: transform ${({ theme }) => theme.transitions.fast};
+  font-size: 1.25rem;
+  font-weight: 600;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  transition: all 0.15s ease;
+  margin-top: 1rem;
+  border: none;
+  cursor: pointer;
 
   &:hover {
-    transform: scale(1.05);
+    background-color: #4f46e5;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
   }
 
   &:active {
-    transform: scale(0.95);
+    transform: translateY(0);
   }
 `;
 
 const AddTaskButton: React.FC<AddTaskButtonProps> = ({ onClick }) => {
   return (
     <Button onClick={onClick} aria-label="Add new task">
-      +
+      + Add New Task
     </Button>
   );
 };

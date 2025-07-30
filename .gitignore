@@ -44,4 +44,8 @@ server/logs/
 server/uploads/
 
 # TypeScript
-*.tsbuildinfo 
+*.tsbuildinfo
+
+# OAuth Credentials
+docs/client_secret_*.json
+docs/*client_secret*.json 
