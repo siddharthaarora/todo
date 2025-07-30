@@ -4,7 +4,7 @@ import TaskList from '../components/TaskList';
 import AddTaskButton from '../components/AddTaskButton';
 import TaskModal from '../components/TaskModal';
 import ProgressTracker from '../components/ProgressTracker';
-import { Task } from '../types';
+import { Task } from '../services/api';
 import api from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -27,6 +27,75 @@ const Title = styled.h1`
   color: ${({ theme }) => theme.colors.gray[900]};
 `;
 
+const UserName = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: ${({ theme }) => theme.colors.gray[600]};
+`;
+
+const UserAvatar = styled.button`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: ${({ theme }) => theme.colors.primary};
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  transition: all ${({ theme }) => theme.transitions.fast};
+  position: relative;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.secondary};
+    transform: scale(1.05);
+  }
+`;
+
+const DropdownMenu = styled.div<{ isOpen: boolean }>`
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background-color: white;
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  box-shadow: ${({ theme }) => theme.shadows.lg};
+  border: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  min-width: 150px;
+  z-index: 1000;
+  opacity: ${({ isOpen }) => (isOpen ? 1 : 0)};
+  visibility: ${({ isOpen }) => (isOpen ? 'visible' : 'hidden')};
+  transform: ${({ isOpen }) => (isOpen ? 'translateY(0)' : 'translateY(-10px)')};
+  transition: all ${({ theme }) => theme.transitions.fast};
+`;
+
+const DropdownItem = styled.button`
+  width: 100%;
+  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.gray[700]};
+  transition: background-color ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.gray[100]};
+  }
+
+  &:first-child {
+    border-radius: ${({ theme }) => theme.borderRadius.md} ${({ theme }) => theme.borderRadius.md} 0 0;
+  }
+
+  &:last-child {
+    border-radius: 0 0 ${({ theme }) => theme.borderRadius.md} ${({ theme }) => theme.borderRadius.md};
+  }
+`;
+
 const MainContent = styled.main`
   display: grid;
   grid-template-columns: 1fr;
@@ -41,7 +110,9 @@ const Dashboard: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const { user } = useAuth();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [showCompleted, setShowCompleted] = useState(false);
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     if (user) {
@@ -54,7 +125,7 @@ const Dashboard: React.FC = () => {
     
     try {
       const response = await api.getTasks(user.id);
-      setTasks(response.tasks);
+      setTasks(response.tasks || []);
     } catch (error) {
       console.error('Error loading tasks:', error);
     }
@@ -138,6 +209,47 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const getUserInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word.charAt(0))
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  const handleAvatarClick = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleSignOut = () => {
+    logout();
+    setIsDropdownOpen(false);
+  };
+
+  const handleSettings = () => {
+    // TODO: Implement settings functionality
+    console.log('Settings clicked');
+    setIsDropdownOpen(false);
+  };
+
+  const handleToggleCompleted = () => {
+    setShowCompleted(!showCompleted);
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest('[data-dropdown]')) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   if (!user) {
     return <div>Please log in to view your tasks.</div>;
   }
@@ -145,19 +257,38 @@ const Dashboard: React.FC = () => {
   return (
     <DashboardContainer>
       <Header>
-        <Title>Prodigy</Title>
-        <AddTaskButton onClick={handleAddTask} />
+        <Title>proxyc</Title>
+        <div data-dropdown style={{ position: 'relative' }}>
+          <UserAvatar onClick={handleAvatarClick}>
+            {getUserInitials(user?.name || 'User')}
+          </UserAvatar>
+          <DropdownMenu isOpen={isDropdownOpen}>
+            <DropdownItem onClick={handleSignOut}>
+              Sign Out
+            </DropdownItem>
+            <DropdownItem onClick={handleSettings}>
+              Settings
+            </DropdownItem>
+          </DropdownMenu>
+        </div>
       </Header>
 
       <MainContent>
-        <TaskList
-          tasks={tasks}
-          onEditTask={handleEditTask}
-          onDeleteTask={handleDeleteTask}
-          onToggleComplete={handleToggleComplete}
-          onAddTask={handleSaveTask}
+        <div>
+          <TaskList
+            tasks={tasks.filter(task => showCompleted ? task.completed : !task.completed)}
+            onEditTask={handleEditTask}
+            onDeleteTask={handleDeleteTask}
+            onToggleComplete={handleToggleComplete}
+            onAddTask={handleSaveTask}
+          />
+          <AddTaskButton onClick={handleAddTask} />
+        </div>
+        <ProgressTracker 
+          tasks={tasks} 
+          showCompleted={showCompleted}
+          onToggleCompleted={handleToggleCompleted}
         />
-        <ProgressTracker tasks={tasks} />
       </MainContent>
 
       <TaskModal

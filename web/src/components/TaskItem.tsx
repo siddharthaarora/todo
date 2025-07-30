@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Task } from '../types';
+import { Task } from '../services/api';
 
 interface TaskItemProps {
   task: Task;
@@ -9,7 +9,9 @@ interface TaskItemProps {
   onToggleComplete: () => void;
 }
 
-const Container = styled.div<{ completed: boolean }>`
+const Container = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== 'completed'
+})<{ completed: boolean }>`
   display: flex;
   align-items: center;
   padding: ${({ theme }) => theme.spacing.md};
@@ -36,7 +38,9 @@ const Content = styled.div`
   flex: 1;
 `;
 
-const Title = styled.h3<{ completed: boolean }>`
+const Title = styled.h3.withConfig({
+  shouldForwardProp: (prop) => prop !== 'completed'
+})<{ completed: boolean }>`
   font-size: ${({ theme }) => theme.typography.fontSize.base};
   font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
   color: ${({ theme, completed }) =>

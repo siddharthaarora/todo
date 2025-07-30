@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Task, SortOption, FilterOption } from '../types';
+import { SortOption, FilterOption } from '../types';
+import { Task } from '../services/api';
 import TaskItem from './TaskItem';
 
 interface TaskListProps {
@@ -103,6 +104,15 @@ const Select = styled.select`
   }
 `;
 
+const DateHeader = styled.h3`
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.gray[700]};
+  margin: ${({ theme }) => theme.spacing.lg} 0 ${({ theme }) => theme.spacing.md} 0;
+  padding: ${({ theme }) => theme.spacing.sm} 0;
+  border-bottom: 2px solid ${({ theme }) => theme.colors.gray[200]};
+`;
+
 const TaskList: React.FC<TaskListProps> = ({
   tasks,
   onEditTask,
@@ -110,8 +120,6 @@ const TaskList: React.FC<TaskListProps> = ({
   onToggleComplete,
   onAddTask,
 }) => {
-  const [sortBy, setSortBy] = useState<SortOption>('dueDate');
-  const [filterBy, setFilterBy] = useState<FilterOption>('all');
   const [quickAddText, setQuickAddText] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -145,43 +153,15 @@ const TaskList: React.FC<TaskListProps> = ({
 
   const sortTasks = (tasks: Task[]): Task[] => {
     return [...tasks].sort((a, b) => {
-      switch (sortBy) {
-        case 'dueDate':
-          const dateA = a.dueDate ? new Date(a.dueDate).getTime() : 0;
-          const dateB = b.dueDate ? new Date(b.dueDate).getTime() : 0;
-          return dateA - dateB;
-        case 'category':
-          return (a.category ?? '').localeCompare(b.category ?? '');
-        case 'createdAt':
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        default:
-          return 0;
-      }
+      const dateA = a.dueDate ? new Date(a.dueDate).getTime() : 0;
+      const dateB = b.dueDate ? new Date(b.dueDate).getTime() : 0;
+      return dateA - dateB;
     });
   };
 
   const filterTasks = (tasks: Task[]): Task[] => {
-    switch (filterBy) {
-      case 'active':
-        return tasks.filter(task => !task.completed);
-      case 'completed':
-        return tasks.filter(task => task.completed);
-      default:
-        return tasks;
-    }
-  };
-
-  const getPriorityWeight = (priority: Task['priority']): number => {
-    switch (priority) {
-      case 'high':
-        return 3;
-      case 'medium':
-        return 2;
-      case 'low':
-        return 1;
-      default:
-        return 0;
-    }
+    // Show all tasks by default
+    return tasks;
   };
 
   const handleDragEnd = (result: any) => {
@@ -195,6 +175,44 @@ const TaskList: React.FC<TaskListProps> = ({
   };
 
   const sortedAndFilteredTasks = filterTasks(sortTasks(tasks));
+
+  // Group tasks by due date
+  const groupTasksByDate = (tasks: Task[]) => {
+    const groups: { [key: string]: Task[] } = {};
+    
+    tasks.forEach(task => {
+      let dateKey: string;
+      if (!task.dueDate) {
+        dateKey = 'No Due Date';
+      } else {
+        const dueDate = new Date(task.dueDate);
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        if (dueDate.toDateString() === today.toDateString()) {
+          dateKey = 'Today';
+        } else if (dueDate.toDateString() === tomorrow.toDateString()) {
+          dateKey = 'Tomorrow';
+        } else {
+          dateKey = dueDate.toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            month: 'long', 
+            day: 'numeric' 
+          });
+        }
+      }
+      
+      if (!groups[dateKey]) {
+        groups[dateKey] = [];
+      }
+      groups[dateKey].push(task);
+    });
+    
+    return groups;
+  };
+
+  const taskGroups = groupTasksByDate(sortedAndFilteredTasks);
 
   return (
     <Container>
@@ -216,49 +234,32 @@ const TaskList: React.FC<TaskListProps> = ({
         </AddButton>
       </QuickAddContainer>
 
-      <Header>
-        <Title>Tasks</Title>
-        <Controls>
-          <Select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as SortOption)}
-          >
-            <option value="dueDate">Sort by Due Date</option>
-            <option value="category">Sort by Category</option>
-            <option value="createdAt">Sort by Created Date</option>
-          </Select>
-          <Select
-            value={filterBy}
-            onChange={(e) => setFilterBy(e.target.value as FilterOption)}
-          >
-            <option value="all">All Tasks</option>
-            <option value="active">Active Tasks</option>
-            <option value="completed">Completed Tasks</option>
-          </Select>
-        </Controls>
-      </Header>
-
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="tasks">
           {(provided) => (
             <div {...provided.droppableProps} ref={provided.innerRef}>
-              {sortedAndFilteredTasks.map((task, index) => (
-                <Draggable key={task._id} draggableId={task._id} index={index}>
-                  {(provided) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                    >
-                      <TaskItem
-                        task={task}
-                        onEdit={() => onEditTask(task)}
-                        onDelete={() => onDeleteTask(task._id)}
-                        onToggleComplete={() => onToggleComplete(task._id)}
-                      />
-                    </div>
-                  )}
-                </Draggable>
+              {Object.entries(taskGroups).map(([dateKey, tasksInGroup], groupIndex) => (
+                <div key={dateKey}>
+                  <DateHeader>{dateKey}</DateHeader>
+                  {tasksInGroup.map((task, index) => (
+                    <Draggable key={task._id} draggableId={task._id} index={groupIndex * 1000 + index}>
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                        >
+                          <TaskItem
+                            task={task}
+                            onEdit={() => onEditTask(task)}
+                            onDelete={() => onDeleteTask(task._id)}
+                            onToggleComplete={() => onToggleComplete(task._id)}
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                </div>
               ))}
               {provided.placeholder}
             </div>

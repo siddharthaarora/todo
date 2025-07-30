@@ -21,7 +21,7 @@ export class TaskService {
   ): Promise<{ tasks: ITask[]; total: number }> {
     const {
       page = 1,
-      limit = 10,
+      limit = 1000, // Increased default limit to get all tasks
       completed,
       category,
       sortBy = 'createdAt',

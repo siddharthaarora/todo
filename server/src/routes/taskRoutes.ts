@@ -1,21 +1,23 @@
 import express from 'express';
 import { TaskService } from '../services/taskService';
+import { Task } from '../models/Task';
 
 const router = express.Router();
 
 // Get all tasks for a user
 router.get('/', async (req, res) => {
   try {
-    console.log('GET /tasks - Query params:', req.query);
     const userId = req.query.userId as string;
+    
     const { tasks, total } = await TaskService.getTasks(userId, {
       page: Number(req.query.page) || 1,
-      limit: Number(req.query.limit) || 10,
-      completed: req.query.completed === 'true',
+      limit: Number(req.query.limit) || 1000, // Use higher limit
+      completed: req.query.completed !== undefined ? req.query.completed === 'true' : undefined,
       category: req.query.category as string,
       sortBy: req.query.sortBy as string,
       search: req.query.search as string,
     });
+    
     res.json({ tasks, total });
   } catch (error: any) {
     console.error('Error fetching tasks:', error);
@@ -26,7 +28,6 @@ router.get('/', async (req, res) => {
 // Create a new task
 router.post('/', async (req, res) => {
   try {
-    console.log('POST /tasks - Request body:', req.body);
     const { title, description, category, dueDate, userId } = req.body;
     
     if (!title || !userId) {
@@ -41,7 +42,6 @@ router.post('/', async (req, res) => {
       dueDate,
       userId,
     });
-    console.log('Task created successfully:', task);
     res.status(201).json(task);
   } catch (error: any) {
     console.error('Error creating task:', error);
