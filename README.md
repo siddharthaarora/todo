@@ -8,6 +8,11 @@ A scalable todo application built with React, Node.js, and MongoDB.
 - MongoDB Community Edition
 - npm or yarn
 
+### Windows Prerequisites
+- **PowerShell 5.1 or higher** (included with Windows 10/11)
+- **Git for Windows** (download from [git-scm.com](https://git-scm.com/download/win))
+- **Windows Terminal** (recommended, available from Microsoft Store)
+
 ## MongoDB Installation
 
 ### Windows
@@ -16,6 +21,21 @@ A scalable todo application built with React, Node.js, and MongoDB.
 3. Choose "Complete" installation
 4. Install MongoDB Compass (GUI tool) when prompted
 5. MongoDB will be installed as a Windows Service and will start automatically
+
+**Windows Service Management:**
+```powershell
+# Check if MongoDB service is running
+Get-Service -Name MongoDB
+
+# Start MongoDB service (if not running)
+Start-Service MongoDB
+
+# Stop MongoDB service
+Stop-Service MongoDB
+
+# Set MongoDB to start automatically on boot
+Set-Service MongoDB -StartupType Automatic
+```
 
 ### macOS
 1. Using Homebrew:
@@ -65,12 +85,33 @@ sudo systemctl enable mongod
 ## Project Setup
 
 1. Clone the repository:
+
+**Windows (PowerShell):**
+```powershell
+git clone <repository-url>
+cd todo
+```
+
+**macOS/Linux:**
 ```bash
 git clone <repository-url>
 cd todo
 ```
 
 2. Install dependencies for both server and web:
+
+**Windows (PowerShell):**
+```powershell
+# Install server dependencies
+cd server
+npm install
+
+# Install web dependencies
+cd ..\web
+npm install
+```
+
+**macOS/Linux:**
 ```bash
 # Install server dependencies
 cd server
@@ -82,6 +123,14 @@ npm install
 ```
 
 3. Create a `.env` file in the server directory:
+
+**Windows (PowerShell):**
+```powershell
+cd ..\server
+New-Item -ItemType File -Name ".env"
+```
+
+**macOS/Linux:**
 ```bash
 cd ../server
 touch .env
@@ -94,6 +143,22 @@ PORT=3001
 ```
 
 5. Start the development servers:
+
+**Windows (PowerShell):**
+
+In one PowerShell window (server):
+```powershell
+cd server
+npm run dev
+```
+
+In another PowerShell window (web):
+```powershell
+cd web
+npm run dev
+```
+
+**macOS/Linux:**
 
 In one terminal (server):
 ```bash
@@ -123,13 +188,18 @@ todo/
 │   │   └── index.ts       # Server entry point
 │   └── package.json
 │
-└── web/                   # Frontend application
-    ├── src/
-    │   ├── components/    # React components
-    │   ├── pages/        # Page components
-    │   ├── services/     # API services
-    │   └── types/        # TypeScript types
-    └── package.json
+├── web/                   # Frontend application
+│   ├── src/
+│   │   ├── components/    # React components
+│   │   ├── pages/        # Page components
+│   │   ├── services/     # API services
+│   │   └── types/        # TypeScript types
+│   └── package.json
+│
+└── aws-deployment/        # AWS deployment configuration
+    ├── terraform/         # Infrastructure as Code
+    ├── deploy-*.sh        # Linux/macOS deployment scripts
+    └── deploy-*.ps1       # Windows deployment scripts
 ```
 
 ## Available Scripts
@@ -138,11 +208,51 @@ todo/
 - `npm run dev`: Start development server with hot reload
 - `npm run build`: Build the server
 - `npm start`: Start production server
+- `npm test`: Run server tests
 
 ### Web
 - `npm run dev`: Start development server
 - `npm run build`: Build the web application
 - `npm start`: Start production server
+- `npm test`: Run web tests
+
+## Testing
+
+### Running Tests
+
+**Windows (PowerShell):**
+```powershell
+# Run all server tests
+cd server
+npm test
+
+# Run all web tests
+cd ..\web
+npm test
+
+# Run specific test file
+npm test -- dateUtils.test.ts
+
+# Run tests in watch mode
+npm test -- --watch
+```
+
+**macOS/Linux:**
+```bash
+# Run all server tests
+cd server
+npm test
+
+# Run all web tests
+cd ../web
+npm test
+
+# Run specific test file
+npm test -- dateUtils.test.ts
+
+# Run tests in watch mode
+npm test -- --watch
+```
 
 ## Database Management
 
@@ -152,36 +262,176 @@ todo/
 3. Create a new database named `todo-app`
 
 ### Using MongoDB Shell
-1. Open terminal
-2. Run `mongosh`
-3. Create and use database:
-```javascript
+
+**Windows:**
+```powershell
+# Open MongoDB Shell
+mongosh
+
+# Create and use database
 use todo-app
 ```
+
+**macOS/Linux:**
+```bash
+# Open MongoDB Shell
+mongosh
+
+# Create and use database
+use todo-app
+```
+
+## AWS Deployment
+
+The project includes comprehensive AWS deployment configuration with support for both Windows and Linux/macOS environments.
+
+### Prerequisites for AWS Deployment
+
+**Windows:**
+1. Install AWS CLI: Download from [aws.amazon.com/cli](https://aws.amazon.com/cli/)
+2. Install Terraform: Download from [terraform.io](https://www.terraform.io/downloads.html)
+3. Install Docker Desktop: Download from [docker.com](https://www.docker.com/products/docker-desktop/)
+4. Configure AWS credentials:
+```powershell
+aws configure
+```
+
+**macOS/Linux:**
+1. Install AWS CLI, Terraform, and Docker using your package manager
+2. Configure AWS credentials:
+```bash
+aws configure
+```
+
+### Deployment Steps
+
+**Windows (PowerShell):**
+```powershell
+# Navigate to deployment directory
+cd aws-deployment
+
+# Deploy infrastructure
+.\deploy-infrastructure.ps1 -Environment production -AwsRegion us-east-1
+
+# Deploy applications
+.\deploy-applications.ps1
+
+# Setup database
+.\setup-database.ps1
+```
+
+**macOS/Linux:**
+```bash
+# Navigate to deployment directory
+cd aws-deployment
+
+# Make scripts executable
+chmod +x *.sh
+
+# Deploy infrastructure
+./deploy-infrastructure.sh production us-east-1
+
+# Deploy applications
+./deploy-applications.sh
+
+# Setup database
+./setup-database.sh
+```
+
+For detailed deployment instructions, see [aws-deployment/DEPLOYMENT_GUIDE.md](aws-deployment/DEPLOYMENT_GUIDE.md).
 
 ## Troubleshooting
 
 ### MongoDB Connection Issues
-1. Ensure MongoDB service is running:
-   - Windows: Check Services app
-   - macOS: `brew services list`
-   - Linux: `sudo systemctl status mongod`
 
-2. Check MongoDB logs:
-   - Windows: `C:\Program Files\MongoDB\Server\<version>\log\mongod.log`
-   - macOS/Linux: `/var/log/mongodb/mongod.log`
-
-### Port Conflicts
-If port 3000 or 3001 is already in use:
-1. Find the process using the port:
-```bash
-# Windows
-netstat -ano | findstr :3000
-# macOS/Linux
-lsof -i :3000
+**Windows:**
+1. Check if MongoDB service is running:
+```powershell
+Get-Service -Name MongoDB
 ```
 
-2. Kill the process or change the port in the configuration
+2. Start MongoDB service if not running:
+```powershell
+Start-Service MongoDB
+```
+
+3. Check MongoDB logs:
+```powershell
+Get-Content "C:\Program Files\MongoDB\Server\6.0\log\mongod.log" -Tail 50
+```
+
+**macOS:**
+```bash
+brew services list
+```
+
+**Linux:**
+```bash
+sudo systemctl status mongod
+```
+
+### Port Conflicts
+
+If port 3000 or 3001 is already in use:
+
+**Windows (PowerShell):**
+```powershell
+# Find process using port 3000
+netstat -ano | Select-String ":3000"
+
+# Kill process by PID (replace XXXX with actual PID)
+Stop-Process -Id XXXX -Force
+```
+
+**macOS/Linux:**
+```bash
+# Find process using port 3000
+lsof -i :3000
+
+# Kill process by PID
+kill -9 <PID>
+```
+
+### Node.js Issues
+
+**Windows:**
+```powershell
+# Clear npm cache
+npm cache clean --force
+
+# Delete node_modules and reinstall
+Remove-Item -Recurse -Force node_modules
+Remove-Item package-lock.json
+npm install
+```
+
+**macOS/Linux:**
+```bash
+# Clear npm cache
+npm cache clean --force
+
+# Delete node_modules and reinstall
+rm -rf node_modules package-lock.json
+npm install
+```
+
+### PowerShell Execution Policy
+
+If you encounter execution policy errors on Windows:
+```powershell
+# Check current execution policy
+Get-ExecutionPolicy
+
+# Set execution policy to allow local scripts
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+### Docker Issues on Windows
+
+1. Ensure Docker Desktop is running
+2. Check Windows Subsystem for Linux 2 (WSL2) is enabled
+3. Verify virtualization is enabled in BIOS
+4. Restart Docker Desktop if containers fail to start
 
 ## Contributing
 
@@ -190,3 +440,7 @@ lsof -i :3000
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
