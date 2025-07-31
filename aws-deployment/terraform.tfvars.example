@@ -1,0 +1,21 @@
+# AWS Configuration
+aws_region = "us-east-1"
+environment = "production"
+
+# VPC Configuration
+vpc_cidr = "10.0.0.0/16"
+
+# Application Configuration
+app_image = "todo-app-server:latest"
+app_port = 3000
+app_count = 2
+health_check_path = "/health"
+
+# Domain Configuration (optional)
+domain_name = ""
+
+# Sensitive Configuration (set these via environment variables or AWS Secrets Manager)
+# mongodb_uri = "mongodb+srv://username:password@cluster.mongodb.net/database"
+# jwt_secret = "your-jwt-secret-here"
+# google_client_id = "your-google-client-id"
+# google_client_secret = "your-google-client-secret" 
