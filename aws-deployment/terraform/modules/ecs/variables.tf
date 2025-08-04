@@ -53,9 +53,11 @@ variable "health_check_path" {
 variable "alb_arn" {
   description = "Application Load Balancer ARN"
   type        = string
+  default     = ""
 }
 
 variable "alb_security_group_id" {
   description = "Application Load Balancer Security Group ID"
   type        = string
+  default     = ""
 } 

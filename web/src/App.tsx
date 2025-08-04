@@ -10,6 +10,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   const { isAuthenticated, user } = useAuth();
   console.log('ProtectedRoute - isAuthenticated:', isAuthenticated);
   console.log('ProtectedRoute - user:', user);
+  console.log('ProtectedRoute - localStorage token:', !!localStorage.getItem('token'));
   
   if (!isAuthenticated) {
     console.log('User not authenticated, redirecting to login');

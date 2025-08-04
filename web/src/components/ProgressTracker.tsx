@@ -15,12 +15,12 @@ const Container = styled.div`
   padding: ${({ theme }) => theme.spacing.lg};
 `;
 
-const Title = styled.h2`
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.gray[900]};
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
-`;
+// const Title = styled.h2`
+//   font-size: ${({ theme }) => theme.typography.fontSize.xl};
+//   font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+//   color: ${({ theme }) => theme.colors.gray[900]};
+//   margin-bottom: ${({ theme }) => theme.spacing.lg};
+// `;
 
 const ProgressBar = styled.div.attrs({ role: 'progressbar' })`
   width: 100%;

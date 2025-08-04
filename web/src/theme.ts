@@ -1,6 +1,13 @@
-const theme = {
+import { Theme } from './types/theme';
+
+const theme: Theme = {
   colors: {
     primary: '#3B82F6',
+    secondary: '#4f46e5',
+    success: '#22c55e',
+    danger: '#ef4444',
+    warning: '#f59e0b',
+    info: '#3b82f6',
     white: '#FFFFFF',
     gray: {
       50: '#F9FAFB',
@@ -26,6 +33,7 @@ const theme = {
     sm: '0.25rem',
     md: '0.375rem',
     lg: '0.5rem',
+    full: '9999px',
   },
   typography: {
     fontSize: {
@@ -35,12 +43,16 @@ const theme = {
       lg: '1.125rem',
       xl: '1.25rem',
       '2xl': '1.5rem',
+      '3xl': '1.875rem',
     },
     fontWeight: {
       normal: 400,
       medium: 500,
       semibold: 600,
       bold: 700,
+    },
+    fontFamily: {
+      sans: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
     },
   },
   shadows: {
@@ -51,6 +63,12 @@ const theme = {
   transitions: {
     fast: '150ms',
     default: '300ms',
+  },
+  breakpoints: {
+    sm: '640px',
+    md: '768px',
+    lg: '1024px',
+    xl: '1280px',
   },
 };
 

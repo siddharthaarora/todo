@@ -27,11 +27,11 @@ const Title = styled.h1`
   color: ${({ theme }) => theme.colors.gray[900]};
 `;
 
-const UserName = styled.span`
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  color: ${({ theme }) => theme.colors.gray[600]};
-`;
+// const UserName = styled.span`
+//   font-size: ${({ theme }) => theme.typography.fontSize.lg};
+//   font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+//   color: ${({ theme }) => theme.colors.gray[600]};
+// `;
 
 const UserAvatar = styled.button`
   width: 40px;

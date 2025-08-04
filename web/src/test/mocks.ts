@@ -54,8 +54,13 @@ export const mockTheme = {
   colors: {
     white: '#ffffff',
     primary: '#3b82f6',
-    secondary: '#1d4ed8',
+    secondary: '#4f46e5',
+    success: '#22c55e',
+    danger: '#ef4444',
+    warning: '#f59e0b',
+    info: '#3b82f6',
     gray: {
+      50: '#F9FAFB',
       100: '#f3f4f6',
       200: '#e5e7eb',
       300: '#d1d5db',
@@ -63,6 +68,7 @@ export const mockTheme = {
       500: '#6b7280',
       600: '#4b5563',
       700: '#374151',
+      800: '#1F2937',
       900: '#111827',
     },
   },
@@ -77,9 +83,13 @@ export const mockTheme = {
       '3xl': '1.875rem',
     },
     fontWeight: {
+      normal: 400,
       medium: 500,
       semibold: 600,
       bold: 700,
+    },
+    fontFamily: {
+      sans: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
     },
   },
   spacing: {
@@ -90,6 +100,7 @@ export const mockTheme = {
     xl: '2rem',
   },
   borderRadius: {
+    sm: '0.25rem',
     md: '0.375rem',
     lg: '0.5rem',
     full: '9999px',
@@ -104,12 +115,19 @@ export const mockTheme = {
     default: '200ms ease-in-out',
   },
   breakpoints: {
+    sm: '640px',
+    md: '768px',
     lg: '1024px',
+    xl: '1280px',
   },
 };
 
 vi.mock('../theme', () => ({
   default: mockTheme,
+}));
+
+vi.mock('../types/theme', () => ({
+  Theme: {} as any,
 }));
 
 // Mock React Router

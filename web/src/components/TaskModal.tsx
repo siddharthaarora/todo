@@ -102,18 +102,18 @@ const TextArea = styled.textarea`
   }
 `;
 
-const Select = styled.select`
-  padding: ${({ theme }) => theme.spacing.sm};
-  border: 1px solid ${({ theme }) => theme.colors.gray[300]};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  background-color: ${({ theme }) => theme.colors.white};
+// const Select = styled.select`
+//   padding: ${({ theme }) => theme.spacing.sm};
+//   border: 1px solid ${({ theme }) => theme.colors.gray[300]};
+//   border-radius: ${({ theme }) => theme.borderRadius.md};
+//   font-size: ${({ theme }) => theme.typography.fontSize.base};
+//   background-color: ${({ theme }) => theme.colors.white};
 
-  &:focus {
-    outline: none;
-    border-color: ${({ theme }) => theme.colors.primary};
-  }
-`;
+//   &:focus {
+//     outline: none;
+//     border-color: ${({ theme }) => theme.colors.primary};
+//   }
+// `;
 
 const ButtonGroup = styled.div`
   display: flex;

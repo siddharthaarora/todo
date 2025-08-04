@@ -42,6 +42,7 @@ const Login: React.FC = () => {
 
   const handleGoogleSuccess = async (credentialResponse: any) => {
     try {
+      console.log('Google login successful, calling backend...');
       const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/google`, {
         method: 'POST',
         headers: {
@@ -53,13 +54,16 @@ const Login: React.FC = () => {
       });
 
       const data = await response.json();
+      console.log('Backend response:', data);
 
       if (!response.ok) {
         throw new Error(data.message || 'Authentication failed');
       }
 
       if (data.token) {
+        console.log('Token received, logging in user...');
         login(data.token);
+        console.log('User logged in, navigating to dashboard...');
         navigate('/dashboard', { replace: true });
       } else {
         console.error('No token in response');
@@ -78,8 +82,8 @@ const Login: React.FC = () => {
         </Description>
         <GoogleLogin
           onSuccess={handleGoogleSuccess}
-          onError={(error) => {
-            console.error('Google login error:', error);
+          onError={() => {
+            console.error('Google login error');
           }}
           useOneTap={false}
           theme="filled_blue"

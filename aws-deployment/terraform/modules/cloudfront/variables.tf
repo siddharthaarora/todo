@@ -27,6 +27,7 @@ variable "s3_bucket_regional_domain_name" {
 variable "alb_dns_name" {
   description = "Application Load Balancer DNS name"
   type        = string
+  default     = ""
 }
 
 variable "acm_certificate_arn" {

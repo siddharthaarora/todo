@@ -18,7 +18,7 @@ export default defineConfig({
     sourcemap: true,
   },
   define: {
-    'import.meta.env.VITE_GOOGLE_CLIENT_ID': JSON.stringify('647630028904-tvkvo6pn6oqcgaj90rfu82aqff16ak8j.apps.googleusercontent.com'),
-    'import.meta.env.VITE_API_URL': JSON.stringify('http://localhost:3001/api'),
+    'import.meta.env.VITE_GOOGLE_CLIENT_ID': JSON.stringify('669267381643-81uck4b8mrj06sgq2qp2p20r5kue4drb.apps.googleusercontent.com'),
+    'import.meta.env.VITE_API_URL': JSON.stringify('https://dizx41dtz85gc.cloudfront.net/api'),
   },
 }) 

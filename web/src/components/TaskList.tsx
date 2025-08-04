@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { SortOption, FilterOption } from '../types';
+
 import { Task } from '../services/api';
 import TaskItem from './TaskItem';
 
@@ -71,38 +71,38 @@ const AddButton = styled.button`
   }
 `;
 
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
-`;
+// const Header = styled.div`
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+//   margin-bottom: ${({ theme }) => theme.spacing.lg};
+// `;
 
-const Title = styled.h2`
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.gray[900]};
-`;
+// const Title = styled.h2`
+//   font-size: ${({ theme }) => theme.typography.fontSize.xl};
+//   font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+//   color: ${({ theme }) => theme.colors.gray[900]};
+// `;
 
-const Controls = styled.div`
-  display: flex;
-  gap: ${({ theme }) => theme.spacing.md};
-`;
+// const Controls = styled.div`
+//   display: flex;
+//   gap: ${({ theme }) => theme.spacing.md};
+// `;
 
-const Select = styled.select`
-  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
-  border: 1px solid ${({ theme }) => theme.colors.gray[300]};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-  background-color: ${({ theme }) => theme.colors.white};
-  color: ${({ theme }) => theme.colors.gray[700]};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  cursor: pointer;
+// const Select = styled.select`
+//   padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
+//   border: 1px solid ${({ theme }) => theme.colors.gray[300]};
+//   border-radius: ${({ theme }) => theme.borderRadius.md};
+//   background-color: ${({ theme }) => theme.colors.white};
+//   color: ${({ theme }) => theme.colors.gray[700]};
+//   font-size: ${({ theme }) => theme.typography.fontSize.sm};
+//   cursor: pointer;
 
-  &:focus {
-    outline: none;
-    border-color: ${({ theme }) => theme.colors.primary};
-  }
-`;
+//   &:focus {
+//     outline: none;
+//     border-color: ${({ theme }) => theme.colors.primary};
+//   }
+// `;
 
 const DateHeader = styled.h3`
   font-size: ${({ theme }) => theme.typography.fontSize.lg};

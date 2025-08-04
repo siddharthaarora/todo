@@ -90,6 +90,7 @@ resource "aws_ecs_task_definition" "app" {
 
 # ECS Service
 resource "aws_ecs_service" "app" {
+  count           = var.alb_arn != "" ? 1 : 0
   name            = "${var.environment}-app-service"
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.app.arn
@@ -103,7 +104,7 @@ resource "aws_ecs_service" "app" {
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.app.arn
+    target_group_arn = aws_lb_target_group.app[0].arn
     container_name   = "${var.environment}-app"
     container_port   = var.app_port
   }
@@ -117,6 +118,7 @@ resource "aws_ecs_service" "app" {
 
 # Application Load Balancer Target Group
 resource "aws_lb_target_group" "app" {
+  count       = var.alb_arn != "" ? 1 : 0
   name        = "${var.environment}-app-tg"
   port        = var.app_port
   protocol    = "HTTP"
@@ -140,13 +142,14 @@ resource "aws_lb_target_group" "app" {
 
 # ALB Listener
 resource "aws_lb_listener" "app" {
+  count             = var.alb_arn != "" ? 1 : 0
   load_balancer_arn = var.alb_arn
   port              = "80"
   protocol          = "HTTP"
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.app.arn
+    target_group_arn = aws_lb_target_group.app[0].arn
   }
 }
 
@@ -156,11 +159,14 @@ resource "aws_security_group" "ecs_tasks" {
   description = "Allow inbound access from the ALB only"
   vpc_id      = var.vpc_id
 
-  ingress {
-    protocol        = "tcp"
-    from_port       = var.app_port
-    to_port         = var.app_port
-    security_groups = [var.alb_security_group_id]
+  dynamic "ingress" {
+    for_each = var.alb_security_group_id != "" ? [1] : []
+    content {
+      protocol        = "tcp"
+      from_port       = var.app_port
+      to_port         = var.app_port
+      security_groups = [var.alb_security_group_id]
+    }
   }
 
   egress {
@@ -206,6 +212,30 @@ resource "aws_iam_role" "ecs_task_execution_role" {
 resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
   role       = aws_iam_role.ecs_task_execution_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+# IAM Policy for Secrets Manager access
+resource "aws_iam_role_policy" "ecs_task_execution_secrets_policy" {
+  name = "${var.environment}-ecs-task-execution-secrets-policy"
+  role = aws_iam_role.ecs_task_execution_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue"
+        ]
+        Resource = [
+          aws_secretsmanager_secret.mongodb_uri.arn,
+          aws_secretsmanager_secret.jwt_secret.arn,
+          aws_secretsmanager_secret.google_client_id.arn,
+          aws_secretsmanager_secret.google_client_secret.arn
+        ]
+      }
+    ]
+  })
 }
 
 # IAM Role for ECS Tasks

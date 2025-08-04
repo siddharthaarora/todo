@@ -24,13 +24,13 @@ const tasksSlice = createSlice({
       state.items.push(action.payload);
     },
     updateTask: (state, action: PayloadAction<Task>) => {
-      const index = state.items.findIndex(task => task.id === action.payload.id);
+      const index = state.items.findIndex(task => task._id === action.payload._id);
       if (index !== -1) {
         state.items[index] = action.payload;
       }
     },
     deleteTask: (state, action: PayloadAction<string>) => {
-      state.items = state.items.filter(task => task.id !== action.payload);
+      state.items = state.items.filter(task => task._id !== action.payload);
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;

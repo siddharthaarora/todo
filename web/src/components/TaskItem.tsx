@@ -84,12 +84,12 @@ const TaskItem: React.FC<TaskItemProps> = ({
   onDelete,
   onToggleComplete,
 }) => {
-  const handleToggleComplete = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleToggleComplete = (_e: React.ChangeEvent<HTMLInputElement>) => {
     console.log('Toggle complete clicked for task:', task._id);
     onToggleComplete();
   };
 
-  const handleDelete = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleDelete = (_e: React.MouseEvent<HTMLButtonElement>) => {
     console.log('Delete clicked for task:', task._id);
     onDelete();
   };

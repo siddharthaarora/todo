@@ -10,12 +10,12 @@ output "cluster_arn" {
 
 output "service_name" {
   description = "ECS service name"
-  value       = aws_ecs_service.app.name
+  value       = var.alb_arn != "" ? aws_ecs_service.app[0].name : ""
 }
 
 output "service_arn" {
   description = "ECS service ARN"
-  value       = aws_ecs_service.app.id
+  value       = var.alb_arn != "" ? aws_ecs_service.app[0].id : ""
 }
 
 output "task_definition_arn" {
@@ -30,5 +30,5 @@ output "security_groups" {
 
 output "target_group_arn" {
   description = "Target group ARN"
-  value       = aws_lb_target_group.app.arn
+  value       = var.alb_arn != "" ? aws_lb_target_group.app[0].arn : ""
 } 

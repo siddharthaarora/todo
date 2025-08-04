@@ -15,7 +15,7 @@ $Yellow = "Yellow"
 Write-Host "🚀 Starting AWS Infrastructure Deployment" -ForegroundColor $Green
 Write-Host "Environment: $Environment" -ForegroundColor $Yellow
 Write-Host "Region: $AwsRegion" -ForegroundColor $Yellow
-Write-Host "Domain: $($DomainName ? $DomainName : 'None (using default domains)')" -ForegroundColor $Yellow
+Write-Host "Domain: $(if ($DomainName) { $DomainName } else { 'None (using default domains)' })" -ForegroundColor $Yellow
 
 # Check prerequisites
 Write-Host "`nChecking prerequisites..." -ForegroundColor $Yellow
@@ -65,18 +65,28 @@ $AccountId = aws sts get-caller-identity --query Account --output text
 $BucketName = "todo-app-terraform-state-$AccountId"
 
 try {
-    aws s3 ls "s3://$BucketName" | Out-Null
-    Write-Host "✅ S3 bucket already exists: $BucketName" -ForegroundColor $Green
+    aws s3 ls "s3://$BucketName" --region $AwsRegion 2>$null | Out-Null
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "✅ S3 bucket already exists: $BucketName" -ForegroundColor $Green
+    } else {
+        throw "Bucket not found"
+    }
 } catch {
     Write-Host "Creating S3 bucket for Terraform state..." -ForegroundColor $Yellow
     aws s3 mb "s3://$BucketName" --region $AwsRegion
     aws s3api put-bucket-versioning --bucket $BucketName --versioning-configuration Status=Enabled
-    aws s3api put-bucket-encryption --bucket $BucketName --server-side-encryption-configuration '{"Rules":[{"ApplyServerSideEncryptionByDefault":{"SSEAlgorithm":"AES256"}}]}'
+    aws s3api put-bucket-encryption --bucket $BucketName --server-side-encryption-configuration '{\"Rules\":[{\"ApplyServerSideEncryptionByDefault\":{\"SSEAlgorithm\":\"AES256\"}}]}'
     Write-Host "✅ S3 bucket created: $BucketName" -ForegroundColor $Green
 }
 
 # Navigate to Terraform directory
 Set-Location terraform
+
+# Update Terraform backend configuration with actual bucket name
+Write-Host "`nUpdating Terraform backend configuration..." -ForegroundColor $Yellow
+$BackendConfig = Get-Content "main.tf" -Raw
+$BackendConfig = $BackendConfig -replace "ACCOUNT_ID_PLACEHOLDER", $AccountId
+$BackendConfig | Set-Content "main.tf" -Encoding UTF8
 
 # Initialize Terraform
 Write-Host "`nInitializing Terraform..." -ForegroundColor $Yellow
@@ -92,6 +102,10 @@ app_image = "todo-app-server:latest"
 app_port = 3000
 app_count = 2
 health_check_path = "/health"
+mongodb_uri = "placeholder"
+jwt_secret = "placeholder"
+google_client_id = "placeholder"
+google_client_secret = "placeholder"
 "@ | Out-File -FilePath "terraform.tfvars" -Encoding UTF8
 
 # Plan Terraform deployment

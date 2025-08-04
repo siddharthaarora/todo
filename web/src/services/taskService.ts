@@ -22,7 +22,7 @@ export const taskService = {
   updateTask: (updatedTask: Task): Task[] => {
     const tasks = taskService.getTasks();
     const newTasks = tasks.map(task => 
-      task.id === updatedTask.id ? updatedTask : task
+      task._id === updatedTask._id ? updatedTask : task
     );
     taskService.saveTasks(newTasks);
     return newTasks;
@@ -30,7 +30,7 @@ export const taskService = {
 
   deleteTask: (taskId: string): Task[] => {
     const tasks = taskService.getTasks();
-    const newTasks = tasks.filter(task => task.id !== taskId);
+    const newTasks = tasks.filter(task => task._id !== taskId);
     taskService.saveTasks(newTasks);
     return newTasks;
   },

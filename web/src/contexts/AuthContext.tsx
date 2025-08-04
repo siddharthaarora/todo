@@ -24,26 +24,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     // Check for token in localStorage on mount
+    console.log('AuthContext: Checking for stored token on mount');
     const storedToken = localStorage.getItem('token');
+    console.log('AuthContext: Stored token found:', !!storedToken);
     
     if (storedToken) {
       try {
+        console.log('AuthContext: Decoding stored token...');
         const decoded = jwtDecode<User>(storedToken);
+        console.log('AuthContext: Decoded user from stored token:', decoded);
         setUser(decoded);
         setToken(storedToken);
+        console.log('AuthContext: Authentication state restored from localStorage');
       } catch (error) {
         console.error('Error decoding stored token:', error);
         localStorage.removeItem('token');
       }
+    } else {
+      console.log('AuthContext: No stored token found');
     }
   }, []);
 
   const login = (newToken: string) => {
     try {
+      console.log('AuthContext: Login called with token');
       const decoded = jwtDecode<User>(newToken);
+      console.log('AuthContext: Decoded user:', decoded);
       setUser(decoded);
       setToken(newToken);
       localStorage.setItem('token', newToken);
+      console.log('AuthContext: User state updated, isAuthenticated should be true');
     } catch (error) {
       console.error('Error during login:', error);
     }
@@ -60,6 +70,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   console.log('Client ID from env:', clientId);
   console.log('Current origin:', window.location.origin);
   console.log('Full URL:', window.location.href);
+  console.log('Expected client ID: 669267381643-81uck4b8mrj06sgq2qp2p20r5kue4drb.apps.googleusercontent.com');
+  console.log('Client ID match:', clientId === '669267381643-81uck4b8mrj06sgq2qp2p20r5kue4drb.apps.googleusercontent.com');
 
   return (
     <GoogleOAuthProvider clientId={clientId}>
