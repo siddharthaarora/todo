@@ -49,6 +49,7 @@ server/uploads/
 # OAuth Credentials
 docs/client_secret_*.json
 docs/*client_secret*.json
+docs/*accessKeys*.csv
 
 # Docker
 *.tar
