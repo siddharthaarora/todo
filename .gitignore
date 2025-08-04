@@ -48,4 +48,20 @@ server/uploads/
 
 # OAuth Credentials
 docs/client_secret_*.json
-docs/*client_secret*.json 
+docs/*client_secret*.json
+
+# Docker
+*.tar
+*.tar.gz
+docker-compose.override.yml
+.dockerignore
+
+# AWS
+aws-deployment/task-definition.json
+aws-deployment/deployment-outputs.txt
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl 
