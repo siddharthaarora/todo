@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { Link, useNavigate } from 'react-router-dom';
 import TaskList from '../components/TaskList';
 import AddTaskButton from '../components/AddTaskButton';
 import TaskModal from '../components/TaskModal';
@@ -21,10 +22,15 @@ const Header = styled.header`
   margin-bottom: ${({ theme }) => theme.spacing.xl};
 `;
 
-const Title = styled.h1`
+const Title = styled(Link)`
   font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: ${({ theme }) => theme.colors.gray[900]};
+  text-decoration: none;
+  
+  &:hover {
+    color: ${({ theme }) => theme.colors.primary};
+  }
 `;
 
 // const UserName = styled.span`
@@ -113,6 +119,7 @@ const Dashboard: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showCompleted, setShowCompleted] = useState(false);
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
@@ -225,6 +232,7 @@ const Dashboard: React.FC = () => {
   const handleSignOut = () => {
     logout();
     setIsDropdownOpen(false);
+    navigate('/', { replace: true });
   };
 
   const handleSettings = () => {
@@ -257,7 +265,7 @@ const Dashboard: React.FC = () => {
   return (
     <DashboardContainer>
       <Header>
-        <Title>proxyc</Title>
+                 <Title to="/">proxyc</Title>
         <div data-dropdown style={{ position: 'relative' }}>
           <UserAvatar onClick={handleAvatarClick}>
             {getUserInitials(user?.name || 'User')}

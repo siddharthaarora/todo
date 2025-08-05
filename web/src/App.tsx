@@ -3,7 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'r
 import { ThemeProvider } from 'styled-components';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './pages/Login';
+import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
+import Homepage from './pages/Homepage';
 import theme from './theme';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -13,8 +15,8 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   console.log('ProtectedRoute - localStorage token:', !!localStorage.getItem('token'));
   
   if (!isAuthenticated) {
-    console.log('User not authenticated, redirecting to login');
-    return <Navigate to="/login" replace />;
+    console.log('User not authenticated, redirecting to homepage');
+    return <Navigate to="/" replace />;
   }
   
   console.log('User authenticated, rendering protected content');
@@ -50,7 +52,9 @@ const App: React.FC = () => {
       <AuthProvider>
         <Router>
           <Routes>
+            <Route path="/" element={<Homepage />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
             <Route
               path="/dashboard"
@@ -60,7 +64,6 @@ const App: React.FC = () => {
                 </ProtectedRoute>
               }
             />
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </Router>
       </AuthProvider>

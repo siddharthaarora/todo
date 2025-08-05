@@ -36,7 +36,7 @@ const Description = styled.p`
   margin-bottom: ${({ theme }) => theme.spacing.xl};
 `;
 
-const LoginLink = styled(Link)`
+const SignupLink = styled(Link)`
   display: block;
   margin-top: ${({ theme }) => theme.spacing.lg};
   color: ${({ theme }) => theme.colors.primary};
@@ -48,13 +48,13 @@ const LoginLink = styled(Link)`
   }
 `;
 
-const Login: React.FC = () => {
+const Signup: React.FC = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleGoogleSuccess = async (credentialResponse: any) => {
     try {
-      console.log('Google login successful, calling backend...');
+      console.log('Google signup successful, calling backend...');
       const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/google`, {
         method: 'POST',
         headers: {
@@ -75,41 +75,41 @@ const Login: React.FC = () => {
       if (data.token) {
         console.log('Token received, logging in user...');
         login(data.token);
-        console.log('User logged in, navigating to dashboard...');
+        console.log('User signed up and logged in, navigating to dashboard...');
         navigate('/dashboard', { replace: true });
       } else {
         console.error('No token in response');
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('Signup error:', error);
     }
   };
 
   return (
     <Container>
       <Card>
-                 <Title>Welcome to proxyc</Title>
+                 <Title>Join proxyc</Title>
         <Description>
-          Sign in with your Google account to manage your tasks
+          Create your account with Google to start organizing your tasks and boost your productivity
         </Description>
         <GoogleLogin
           onSuccess={handleGoogleSuccess}
           onError={() => {
-            console.error('Google login error');
+            console.error('Google signup error');
           }}
           useOneTap={false}
           theme="filled_blue"
           shape="rectangular"
-          text="signin_with"
+          text="signup_with"
           size="large"
           width="300px"
         />
-        <LoginLink to="/signup">
-          Don't have an account? Sign up
-        </LoginLink>
+        <SignupLink to="/login">
+          Already have an account? Sign in
+        </SignupLink>
       </Card>
     </Container>
   );
 };
 
-export default Login; 
+export default Signup; 
