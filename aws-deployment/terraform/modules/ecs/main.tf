@@ -42,6 +42,10 @@ resource "aws_ecs_task_definition" "app" {
         {
           name  = "PORT"
           value = tostring(var.app_port)
+        },
+        {
+          name  = "CLIENT_URL"
+          value = "https://dizx41dtz85gc.cloudfront.net"
         }
       ]
 

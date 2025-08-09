@@ -19,6 +19,6 @@ export default defineConfig({
   },
   define: {
     'import.meta.env.VITE_GOOGLE_CLIENT_ID': JSON.stringify('669267381643-81uck4b8mrj06sgq2qp2p20r5kue4drb.apps.googleusercontent.com'),
-    'import.meta.env.VITE_API_URL': JSON.stringify('http://localhost:3001/api'),
+    // Remove hardcoded API URL - let environment.ts handle it dynamically
   },
 }) 

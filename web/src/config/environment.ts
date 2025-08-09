@@ -5,18 +5,29 @@ const isLocalhost = window.location.hostname === 'localhost' || window.location.
 
 // API URL configuration
 const getApiUrl = () => {
+  console.log('getApiUrl() called with:', {
+    VITE_API_URL: import.meta.env.VITE_API_URL,
+    isLocalhost,
+    hostname: window.location.hostname,
+    origin: window.location.origin
+  });
+
   // If explicitly set in environment, use that
   if (import.meta.env.VITE_API_URL) {
+    console.log('Using VITE_API_URL:', import.meta.env.VITE_API_URL);
     return import.meta.env.VITE_API_URL;
   }
   
-  // Auto-detect based on environment
-  if (isProduction || !isLocalhost) {
+  // Runtime detection based on current hostname
+  if (isLocalhost) {
+    // Local development - use localhost
+    console.log('Using localhost API URL');
+    return 'http://localhost:3001/api';
+  } else {
+    // Production - use CloudFront domain
+    console.log('Using production API URL');
     return 'https://dizx41dtz85gc.cloudfront.net/api';
   }
-  
-  // Local development - temporarily use production for testing
-  return 'https://dizx41dtz85gc.cloudfront.net/api';
 };
 
 // Google Client ID
@@ -40,4 +51,9 @@ console.log('Environment Configuration:', {
   apiUrl: config.apiUrl,
   hostname: window.location.hostname,
   origin: window.location.origin,
+  envVars: {
+    VITE_API_URL: import.meta.env.VITE_API_URL,
+    DEV: import.meta.env.DEV,
+    PROD: import.meta.env.PROD,
+  }
 }); 
