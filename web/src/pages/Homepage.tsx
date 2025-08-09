@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const HomepageContainer = styled.div`
   min-height: 100vh;
@@ -21,6 +22,14 @@ const Logo = styled.h1`
   font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+`;
+
+const LogoIcon = styled.img`
+  width: 32px;
+  height: 32px;
 `;
 
 const AuthButtons = styled.div`
@@ -34,6 +43,7 @@ const Button = styled(Link)`
   text-decoration: none;
   font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
   transition: all ${({ theme }) => theme.transitions.default};
+  cursor: pointer;
   
   &.primary {
     background: ${({ theme }) => theme.colors.white};
@@ -53,6 +63,24 @@ const Button = styled(Link)`
       background: ${({ theme }) => theme.colors.white};
       color: ${({ theme }) => theme.colors.primary};
     }
+  }
+`;
+
+const SignOutButton = styled.button`
+  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.lg};
+  border-radius: ${({ theme }) => theme.borderRadius.full};
+  text-decoration: none;
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  transition: all ${({ theme }) => theme.transitions.default};
+  cursor: pointer;
+  background: ${({ theme }) => theme.colors.white};
+  color: ${({ theme }) => theme.colors.primary};
+  border: none;
+  font-size: inherit;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: ${({ theme }) => theme.shadows.lg};
   }
 `;
 
@@ -164,21 +192,41 @@ const FeatureDescription = styled.p`
 `;
 
 const Footer = styled.footer`
-  background: ${({ theme }) => theme.colors.gray[900]};
-  color: ${({ theme }) => theme.colors.gray[300]};
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  color: ${({ theme }) => theme.colors.white};
   text-align: center;
   padding: ${({ theme }) => theme.spacing.xl};
 `;
 
 const Homepage: React.FC = () => {
+  const { isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = () => {
+    logout();
+    navigate('/', { replace: true });
+  };
+
   return (
     <HomepageContainer>
              <Header>
-         <Logo>proxyc</Logo>
-         <AuthButtons>
-          <Button to="/login" className="secondary">Sign In</Button>
-          <Button to="/signup" className="primary">Sign Up</Button>
-        </AuthButtons>
+         <Logo>
+           <LogoIcon src="/logo.svg" alt="proxyc logo" />
+           proxyc
+         </Logo>
+                  <AuthButtons>
+           {isAuthenticated ? (
+             <>
+               <Button to="/dashboard" className="secondary">Dashboard</Button>
+               <SignOutButton onClick={handleSignOut}>Sign Out</SignOutButton>
+             </>
+           ) : (
+             <>
+               <Button to="/login" className="secondary">Sign In</Button>
+               <Button to="/signup" className="primary">Sign Up</Button>
+             </>
+           )}
+         </AuthButtons>
       </Header>
 
       <Hero>
@@ -187,7 +235,9 @@ const Homepage: React.FC = () => {
           A smart todo list app filled with intelligent features to help you stay organized, 
           boost productivity, and achieve your goals with ease.
         </HeroSubtitle>
-        <CTAButton to="/signup">Get Started Free</CTAButton>
+                 <CTAButton to={isAuthenticated ? "/dashboard" : "/signup"}>
+           {isAuthenticated ? "Go to Dashboard" : "Get Started Free"}
+         </CTAButton>
       </Hero>
 
       <FeaturesSection>
@@ -221,32 +271,7 @@ const Homepage: React.FC = () => {
               </FeatureDescription>
             </FeatureCard>
 
-            <FeatureCard>
-              <FeatureIcon>👥</FeatureIcon>
-              <FeatureTitle>Simplified sharing</FeatureTitle>
-              <FeatureDescription>
-                Share your todo lists with friends, family, and colleagues to keep everyone 
-                connected and aware of what needs to be done.
-              </FeatureDescription>
-            </FeatureCard>
 
-            <FeatureCard>
-              <FeatureIcon>⚡</FeatureIcon>
-              <FeatureTitle>Drag & drop interface</FeatureTitle>
-              <FeatureDescription>
-                Easily prioritize your tasks with our intuitive drag-and-drop interface. 
-                Reorder items with a simple click and drag.
-              </FeatureDescription>
-            </FeatureCard>
-
-            <FeatureCard>
-              <FeatureIcon>🔒</FeatureIcon>
-              <FeatureTitle>Secure & private</FeatureTitle>
-              <FeatureDescription>
-                Your data is protected with enterprise-grade security. Your tasks and 
-                personal information stay private and secure.
-              </FeatureDescription>
-            </FeatureCard>
           </FeaturesGrid>
         </FeaturesContainer>
       </FeaturesSection>

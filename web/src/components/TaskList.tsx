@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 import { Task } from '../services/api';
 import TaskItem from './TaskItem';
@@ -164,15 +163,8 @@ const TaskList: React.FC<TaskListProps> = ({
     return tasks;
   };
 
-  const handleDragEnd = (result: any) => {
-    if (!result.destination) return;
-
-    const items = Array.from(tasks);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
-
-    // Here you would typically update the tasks order in your state management
-  };
+  // Drag and drop functionality temporarily removed to fix deprecation warnings
+  // Will be replaced with a modern alternative if needed
 
   const sortedAndFilteredTasks = filterTasks(sortTasks(tasks));
 
@@ -234,38 +226,22 @@ const TaskList: React.FC<TaskListProps> = ({
         </AddButton>
       </QuickAddContainer>
 
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable droppableId="tasks">
-          {(provided) => (
-            <div {...provided.droppableProps} ref={provided.innerRef}>
-              {Object.entries(taskGroups).map(([dateKey, tasksInGroup], groupIndex) => (
-                <div key={dateKey}>
-                  <DateHeader>{dateKey}</DateHeader>
-                  {tasksInGroup.map((task, index) => (
-                    <Draggable key={task._id} draggableId={task._id} index={groupIndex * 1000 + index}>
-                      {(provided) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                        >
-                          <TaskItem
-                            task={task}
-                            onEdit={() => onEditTask(task)}
-                            onDelete={() => onDeleteTask(task._id)}
-                            onToggleComplete={() => onToggleComplete(task._id)}
-                          />
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                </div>
-              ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
+      <div>
+        {Object.entries(taskGroups).map(([dateKey, tasksInGroup]) => (
+          <div key={dateKey}>
+            <DateHeader>{dateKey}</DateHeader>
+            {tasksInGroup.map((task) => (
+              <TaskItem
+                key={task._id}
+                task={task}
+                onEdit={() => onEditTask(task)}
+                onDelete={() => onDeleteTask(task._id)}
+                onToggleComplete={() => onToggleComplete(task._id)}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
     </Container>
   );
 };

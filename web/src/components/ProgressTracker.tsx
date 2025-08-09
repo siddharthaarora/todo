@@ -61,7 +61,9 @@ const StatItem = styled.div`
   }
 `;
 
-const ClickableStatItem = styled(StatItem)<{ isActive: boolean }>`
+const ClickableStatItem = styled(StatItem).withConfig({
+  shouldForwardProp: (prop) => prop !== 'isActive'
+})<{ isActive: boolean }>`
   background-color: ${({ isActive, theme }) => 
     isActive ? theme.colors.primary : theme.colors.gray[100]};
   color: ${({ isActive, theme }) => 
@@ -80,7 +82,9 @@ const StatValue = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing.xs};
 `;
 
-const ClickableStatValue = styled(StatValue)<{ isActive: boolean }>`
+const ClickableStatValue = styled(StatValue).withConfig({
+  shouldForwardProp: (prop) => prop !== 'isActive'
+})<{ isActive: boolean }>`
   color: ${({ isActive, theme }) => 
     isActive ? theme.colors.white : theme.colors.primary};
 `;
@@ -90,7 +94,9 @@ const StatLabel = styled.div`
   color: ${({ theme }) => theme.colors.gray[600]};
 `;
 
-const ClickableStatLabel = styled(StatLabel)<{ isActive: boolean }>`
+const ClickableStatLabel = styled(StatLabel).withConfig({
+  shouldForwardProp: (prop) => prop !== 'isActive'
+})<{ isActive: boolean }>`
   color: ${({ isActive, theme }) => 
     isActive ? theme.colors.white : theme.colors.gray[600]};
 `;

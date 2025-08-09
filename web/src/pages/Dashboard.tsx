@@ -10,6 +10,12 @@ import api from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 
 const DashboardContainer = styled.div`
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: ${({ theme }) => theme.colors.white};
+`;
+
+const DashboardContent = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: ${({ theme }) => theme.spacing.lg};
@@ -25,12 +31,20 @@ const Header = styled.header`
 const Title = styled(Link)`
   font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.white};
   text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
   
   &:hover {
-    color: ${({ theme }) => theme.colors.primary};
+    opacity: 0.9;
   }
+`;
+
+const LogoIcon = styled.img`
+  width: 32px;
+  height: 32px;
 `;
 
 // const UserName = styled.span`
@@ -43,8 +57,8 @@ const UserAvatar = styled.button`
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: ${({ theme }) => theme.colors.primary};
-  color: white;
+  background-color: ${({ theme }) => theme.colors.white};
+  color: ${({ theme }) => theme.colors.primary};
   border: none;
   cursor: pointer;
   display: flex;
@@ -56,12 +70,14 @@ const UserAvatar = styled.button`
   position: relative;
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.secondary};
+    background-color: ${({ theme }) => theme.colors.gray[100]};
     transform: scale(1.05);
   }
 `;
 
-const DropdownMenu = styled.div<{ isOpen: boolean }>`
+const DropdownMenu = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== 'isOpen'
+})<{ isOpen: boolean }>`
   position: absolute;
   top: 100%;
   right: 0;
@@ -131,7 +147,7 @@ const Dashboard: React.FC = () => {
     if (!user) return;
     
     try {
-      const response = await api.getTasks(user.id);
+      const response = await api.getTasks();
       setTasks(response.tasks || []);
     } catch (error) {
       console.error('Error loading tasks:', error);
@@ -167,7 +183,7 @@ const Dashboard: React.FC = () => {
           category: task.category,
           dueDate: task.dueDate,
           completed: task.completed,
-        }, user.id);
+        });
         console.log('Task updated successfully:', updatedTask);
         setTasks(tasks.map(t => t._id === task._id ? updatedTask : t));
       } else {
@@ -178,7 +194,7 @@ const Dashboard: React.FC = () => {
           description: task.description,
           category: task.category,
           dueDate: task.dueDate,
-        }, user.id);
+        });
         console.log('Task created successfully:', newTask);
         setTasks([...tasks, newTask]);
       }
@@ -193,7 +209,7 @@ const Dashboard: React.FC = () => {
     
     console.log('Attempting to delete task:', taskId);
     try {
-      await api.deleteTask(taskId, user.id);
+      await api.deleteTask(taskId);
       console.log('Task deleted successfully');
       setTasks(tasks.filter(t => t._id !== taskId));
     } catch (error) {
@@ -206,7 +222,7 @@ const Dashboard: React.FC = () => {
     
     console.log('Attempting to toggle task completion:', taskId);
     try {
-      const updatedTask = await api.toggleTaskCompletion(taskId, user.id);
+      const updatedTask = await api.toggleTaskCompletion(taskId);
       console.log('Task completion toggled successfully:', updatedTask);
       setTasks(tasks.map(task =>
         task._id === taskId ? updatedTask : task
@@ -264,47 +280,52 @@ const Dashboard: React.FC = () => {
 
   return (
     <DashboardContainer>
-      <Header>
-                 <Title to="/">proxyc</Title>
-        <div data-dropdown style={{ position: 'relative' }}>
-          <UserAvatar onClick={handleAvatarClick}>
-            {getUserInitials(user?.name || 'User')}
-          </UserAvatar>
-          <DropdownMenu isOpen={isDropdownOpen}>
-            <DropdownItem onClick={handleSignOut}>
-              Sign Out
-            </DropdownItem>
-            <DropdownItem onClick={handleSettings}>
-              Settings
-            </DropdownItem>
-          </DropdownMenu>
-        </div>
-      </Header>
+      <DashboardContent>
+        <Header>
+          <Title to="/">
+            <LogoIcon src="/logo.svg" alt="proxyc logo" />
+            proxyc
+          </Title>
+          <div data-dropdown style={{ position: 'relative' }}>
+            <UserAvatar onClick={handleAvatarClick}>
+              {getUserInitials(user?.name || 'User')}
+            </UserAvatar>
+            <DropdownMenu isOpen={isDropdownOpen}>
+              <DropdownItem onClick={handleSignOut}>
+                Sign Out
+              </DropdownItem>
+              <DropdownItem onClick={handleSettings}>
+                Settings
+              </DropdownItem>
+            </DropdownMenu>
+          </div>
+        </Header>
 
-      <MainContent>
-        <div>
-          <TaskList
-            tasks={tasks.filter(task => showCompleted ? task.completed : !task.completed)}
-            onEditTask={handleEditTask}
-            onDeleteTask={handleDeleteTask}
-            onToggleComplete={handleToggleComplete}
-            onAddTask={handleSaveTask}
+        <MainContent>
+          <div>
+            <TaskList
+              tasks={tasks.filter(task => showCompleted ? task.completed : !task.completed)}
+              onEditTask={handleEditTask}
+              onDeleteTask={handleDeleteTask}
+              onToggleComplete={handleToggleComplete}
+              onAddTask={handleSaveTask}
+            />
+            <AddTaskButton onClick={handleAddTask} />
+          </div>
+          <ProgressTracker 
+            tasks={tasks} 
+            showCompleted={showCompleted}
+            onToggleCompleted={handleToggleCompleted}
           />
-          <AddTaskButton onClick={handleAddTask} />
-        </div>
-        <ProgressTracker 
-          tasks={tasks} 
-          showCompleted={showCompleted}
-          onToggleCompleted={handleToggleCompleted}
-        />
-      </MainContent>
+        </MainContent>
 
-      <TaskModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onSave={handleSaveTask}
-        task={selectedTask}
-      />
+        <TaskModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          onSave={handleSaveTask}
+          task={selectedTask}
+        />
+      </DashboardContent>
     </DashboardContainer>
   );
 };

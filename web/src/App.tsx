@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import Homepage from './pages/Homepage';
+import ProfileSetup from './components/ProfileSetup';
 import theme from './theme';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -56,6 +57,14 @@ const App: React.FC = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route
+              path="/profile-setup"
+              element={
+                <ProtectedRoute>
+                  <ProfileSetup />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/dashboard"
               element={

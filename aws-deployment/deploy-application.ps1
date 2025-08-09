@@ -148,7 +148,7 @@ npm install
 
 # Build for production
 Write-Host "Building frontend for production..." -ForegroundColor $Yellow
-npm run build
+npx vite build --mode production
 if ($LASTEXITCODE -ne 0) {
     Write-Host "❌ Frontend build failed!" -ForegroundColor $Red
     exit 1
