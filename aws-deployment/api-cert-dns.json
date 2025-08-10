@@ -1,0 +1,45 @@
+{
+  "Changes": [
+    {
+      "Action": "CREATE",
+      "ResourceRecordSet": {
+        "Name": "_537215080adde963471f95201e55b5ba.proxyc.app",
+        "Type": "CNAME",
+        "TTL": 300,
+        "ResourceRecords": [
+          {
+            "Value": "_1ad46e2505ab99ad02c31a6c638bdd35.xlfgrmvvlj.acm-validations.aws"
+          }
+        ]
+      }
+    },
+    {
+      "Action": "CREATE",
+      "ResourceRecordSet": {
+        "Name": "_1564f0553855d803d064d4c0c9df9539.api.proxyc.app",
+        "Type": "CNAME",
+        "TTL": 300,
+        "ResourceRecords": [
+          {
+            "Value": "_41ffe5587426dbe646334a304c22165b.xlfgrmvvlj.acm-validations.aws"
+          }
+        ]
+      }
+    },
+    {
+      "Action": "CREATE",
+      "ResourceRecordSet": {
+        "Name": "_aa87c38cdb1a783944e6cc85e1f0ff73.www.proxyc.app",
+        "Type": "CNAME",
+        "TTL": 300,
+        "ResourceRecords": [
+          {
+            "Value": "_34d4e9c91970c714819f63290dfb308c.xlfgrmvvlj.acm-validations.aws"
+          }
+        ]
+      }
+    }
+  ]
+}
+
+

@@ -196,7 +196,7 @@ const ProfileSetup: React.FC = () => {
       setFormData(prev => ({
         ...prev,
         [parent]: {
-          ...prev[parent as keyof ProfileSetupData],
+          ...(prev[parent as keyof ProfileSetupData] as Record<string, any>),
           [child]: value,
         },
       }));

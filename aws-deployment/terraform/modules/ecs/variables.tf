@@ -60,4 +60,10 @@ variable "alb_security_group_id" {
   description = "Application Load Balancer Security Group ID"
   type        = string
   default     = ""
+}
+
+variable "acm_certificate_arn" {
+  description = "ACM Certificate ARN for HTTPS listener"
+  type        = string
+  default     = ""
 } 

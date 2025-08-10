@@ -5,7 +5,25 @@ data "aws_route53_zone" "main" {
   name = var.domain_name
 }
 
-# Create A record for the ALB
+# ACM Certificate validation records
+resource "aws_route53_record" "cert_validation" {
+  for_each = {
+    for dvo in var.acm_certificate_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+    }
+  }
+
+  allow_overwrite = true
+  name            = each.value.name
+  records         = [each.value.record]
+  ttl             = 60
+  type            = each.value.type
+  zone_id         = data.aws_route53_zone.main.zone_id
+}
+
+# Create A record for the ALB (API)
 resource "aws_route53_record" "api" {
   count = var.domain_name != "" ? 1 : 0
   
@@ -20,7 +38,7 @@ resource "aws_route53_record" "api" {
   }
 }
 
-# Create A record for the CloudFront distribution
+# Create A record for the CloudFront distribution (main domain)
 resource "aws_route53_record" "app" {
   count = var.domain_name != "" ? 1 : 0
   

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { config } from '../config/environment';
+
 import api from '../services/api';
 
 const Container = styled.div`

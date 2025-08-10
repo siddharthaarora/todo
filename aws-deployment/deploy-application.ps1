@@ -148,7 +148,7 @@ npm install
 
 # Build for production
 Write-Host "Building frontend for production..." -ForegroundColor $Yellow
-$env:VITE_API_URL = "https://dizx41dtz85gc.cloudfront.net/api"
+# Note: No VITE_API_URL set - using runtime detection to hit ALB directly
 npx vite build --mode production
 if ($LASTEXITCODE -ne 0) {
     Write-Host "❌ Frontend build failed!" -ForegroundColor $Red

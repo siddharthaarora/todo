@@ -45,7 +45,7 @@ resource "aws_ecs_task_definition" "app" {
         },
         {
           name  = "CLIENT_URL"
-          value = "https://dizx41dtz85gc.cloudfront.net"
+          value = "https://proxyc.app"
         }
       ]
 
@@ -113,7 +113,7 @@ resource "aws_ecs_service" "app" {
     container_port   = var.app_port
   }
 
-  depends_on = [aws_lb_listener.app]
+  depends_on = [aws_lb_listener.app, aws_lb_listener.app_https]
 
   tags = {
     Name = "${var.environment}-ecs-service"
@@ -144,12 +144,27 @@ resource "aws_lb_target_group" "app" {
   }
 }
 
-# ALB Listener
+# ALB Listener (HTTP)
 resource "aws_lb_listener" "app" {
   count             = var.alb_arn != "" ? 1 : 0
   load_balancer_arn = var.alb_arn
   port              = "80"
   protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.app[0].arn
+  }
+}
+
+# ALB Listener (HTTPS)
+resource "aws_lb_listener" "app_https" {
+  count             = var.alb_arn != "" && var.acm_certificate_arn != "" ? 1 : 0
+  load_balancer_arn = var.alb_arn
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
+  certificate_arn   = var.acm_certificate_arn
 
   default_action {
     type             = "forward"

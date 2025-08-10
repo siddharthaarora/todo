@@ -1,6 +1,6 @@
 ﻿aws_region = "us-east-1"
 environment = "production"
-domain_name = ""
+domain_name = "proxyc.app"
 app_image = "todo-app-server:latest"
 app_port = 3000
 app_count = 2

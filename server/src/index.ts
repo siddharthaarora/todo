@@ -19,12 +19,39 @@ if (missingEnvVars.length > 0) {
 const app = express();
 
 // Middleware
-app.use(cors({
-  origin: ['http://localhost:3000', 'https://dizx41dtz85gc.cloudfront.net'],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+// CORS configuration
+app.use((req, res, next) => {
+  const allowedOrigins = [
+    'https://proxyc.app',
+    'https://www.proxyc.app',
+    'http://localhost:3000',
+    'https://dizx41dtz85gc.cloudfront.net'
+  ];
+  
+  const origin = req.headers.origin;
+  console.log(`Request from origin: ${origin}, Method: ${req.method}, URL: ${req.url}`);
+  
+  // Set CORS headers
+  if (origin && allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+    console.log(`Allowing origin: ${origin}`);
+  } else {
+    console.log(`Origin not allowed: ${origin}`);
+  }
+  
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    console.log(`OPTIONS request from ${origin} for ${req.url}`);
+    res.status(200).end();
+    return;
+  }
+  
+  next();
+});
 app.use(express.json());
 app.use(passport.initialize());
 

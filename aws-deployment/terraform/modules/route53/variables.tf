@@ -21,4 +21,15 @@ variable "alb_zone_id" {
 variable "cloudfront_domain" {
   description = "CloudFront distribution domain"
   type        = string
+}
+
+variable "acm_certificate_validation_options" {
+  description = "ACM certificate validation options"
+  type = list(object({
+    domain_name           = string
+    resource_record_name  = string
+    resource_record_type  = string
+    resource_record_value = string
+  }))
+  default = []
 } 

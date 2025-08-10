@@ -50,6 +50,7 @@ module "ecs" {
   
   alb_arn = module.alb.alb_arn
   alb_security_group_id = module.alb.security_group_id
+  acm_certificate_arn = "arn:aws:acm:us-east-1:992487937364:certificate/11866216-d20d-4fed-a507-f988d6e8e69f"
   
   depends_on = [module.vpc, module.alb]
 }
@@ -62,6 +63,22 @@ module "s3" {
   domain_name = var.domain_name
 }
 
+# ACM Certificate for custom domain
+resource "aws_acm_certificate" "main" {
+  count = var.domain_name != "" ? 1 : 0
+  
+  domain_name       = var.domain_name
+  validation_method = "DNS"
+  
+  lifecycle {
+    create_before_destroy = true
+  }
+  
+  tags = {
+    Name = "${var.environment}-${var.domain_name}-certificate"
+  }
+}
+
 # CloudFront for CDN
 module "cloudfront" {
   source = "./modules/cloudfront"
@@ -71,8 +88,10 @@ module "cloudfront" {
   s3_bucket_id = module.s3.bucket_id
   s3_bucket_arn = module.s3.bucket_arn
   s3_bucket_regional_domain_name = module.s3.bucket_regional_domain_name
+  alb_dns_name = module.alb.alb_dns_name
+  acm_certificate_arn = var.domain_name != "" ? aws_acm_certificate.main[0].arn : null
   
-  depends_on = [module.s3]
+  depends_on = [module.s3, module.alb]
 }
 
 # Application Load Balancer
@@ -96,8 +115,9 @@ module "route53" {
   alb_dns_name = module.alb.alb_dns_name
   alb_zone_id  = module.alb.alb_zone_id
   cloudfront_domain = module.cloudfront.cloudfront_domain
+  acm_certificate_validation_options = var.domain_name != "" ? aws_acm_certificate.main[0].domain_validation_options : []
   
-  depends_on = [module.alb, module.cloudfront]
+  depends_on = [module.alb, module.cloudfront, aws_acm_certificate.main]
 }
 
 # Outputs
@@ -116,6 +136,8 @@ output "s3_bucket_name" {
 output "ecs_cluster_name" {
   value = module.ecs.cluster_name
 } 
+
+
 
 
 

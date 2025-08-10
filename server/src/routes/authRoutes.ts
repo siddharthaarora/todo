@@ -5,8 +5,16 @@ import { User } from '../models/User';
 import { OAuth2Client } from 'google-auth-library';
 import { authenticateToken } from '../middleware/auth';
 
+
+
+
+
 const router = express.Router();
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+
+
+
 
 // Google OAuth routes
 router.get(
@@ -101,8 +109,12 @@ router.post('/setup-profile', authenticateToken, async (req, res) => {
   try {
     const { displayName, bio, timezone, language, preferences } = req.body;
     
-    const user = await User.findByIdAndUpdate(
-      req.user.id,
+         if (!req.user) {
+       return res.status(401).json({ message: 'User not authenticated' });
+     }
+     
+     const user = await User.findByIdAndUpdate(
+       (req.user as any)._id,
       {
         displayName,
         bio,
