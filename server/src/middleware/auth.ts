@@ -1,13 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyToken } from '../services/authService';
-import { User } from '../models/User';
+import { User, IUser } from '../models/User';
 
 // Extend the Request interface to include user
-declare global {
-  namespace Express {
-    interface Request {
-      user?: any;
-    }
+declare module 'express-serve-static-core' {
+  interface Request {
+    user?: IUser;
   }
 }
 

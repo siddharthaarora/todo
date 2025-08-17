@@ -8,7 +8,10 @@ const router = express.Router();
 // Get all tasks for a user
 router.get('/', authenticateToken, async (req, res) => {
   try {
-    const userId = req.user._id.toString();
+    if (!req.user) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
+    const userId = (req.user as any)._id.toString();
     
     const { tasks, total } = await TaskService.getTasks(userId, {
       page: Number(req.query.page) || 1,
@@ -29,8 +32,11 @@ router.get('/', authenticateToken, async (req, res) => {
 // Create a new task
 router.post('/', authenticateToken, async (req, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
     const { title, description, category, dueDate } = req.body;
-    const userId = req.user._id.toString();
+    const userId = (req.user as any)._id.toString();
     
     if (!title) {
       console.error('Missing required fields:', { title });
@@ -54,7 +60,10 @@ router.post('/', authenticateToken, async (req, res) => {
 // Update a task
 router.put('/:id', authenticateToken, async (req, res) => {
   try {
-    const userId = req.user._id.toString();
+    if (!req.user) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
+    const userId = (req.user as any)._id.toString();
     const task = await TaskService.updateTask(req.params.id, userId, req.body);
     if (!task) {
       return res.status(404).json({ error: 'Task not found' });
@@ -69,7 +78,10 @@ router.put('/:id', authenticateToken, async (req, res) => {
 // Delete a task
 router.delete('/:id', authenticateToken, async (req, res) => {
   try {
-    const userId = req.user._id.toString();
+    if (!req.user) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
+    const userId = (req.user as any)._id.toString();
     const success = await TaskService.deleteTask(req.params.id, userId);
     if (!success) {
       return res.status(404).json({ error: 'Task not found' });
@@ -84,7 +96,10 @@ router.delete('/:id', authenticateToken, async (req, res) => {
 // Toggle task completion
 router.patch('/:id/toggle', authenticateToken, async (req, res) => {
   try {
-    const userId = req.user._id.toString();
+    if (!req.user) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
+    const userId = (req.user as any)._id.toString();
     const task = await TaskService.toggleTaskCompletion(req.params.id, userId);
     if (!task) {
       return res.status(404).json({ error: 'Task not found' });
