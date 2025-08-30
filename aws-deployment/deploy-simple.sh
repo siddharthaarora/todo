@@ -1,8 +1,6 @@
 #!/bin/bash
 
-# Application Deployment Script
-# This script builds and deploys the todo applications
-
+# Simplified Application Deployment Script
 set -e
 
 # Colors for output
@@ -17,19 +15,16 @@ AWS_REGION=${2:-us-east-1}
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 ECR_REPOSITORY_PREFIX="todo-app"
 
+# Hardcoded values from deployment outputs
+ALB_DNS_NAME="production-alb-1629828006.us-east-1.elb.amazonaws.com"
+CLOUDFRONT_DOMAIN="dizx41dtz85gc.cloudfront.net"
+S3_BUCKET_NAME="production-todo-app-static-mngq5kti"
+ECS_CLUSTER_NAME="production-cluster"
+
 echo -e "${GREEN}🚀 Starting Application Deployment${NC}"
 echo -e "${YELLOW}Environment: ${ENVIRONMENT}${NC}"
 echo -e "${YELLOW}Region: ${AWS_REGION}${NC}"
 echo -e "${YELLOW}AWS Account: ${AWS_ACCOUNT_ID}${NC}"
-
-# Load deployment outputs if available
-if [ -f "deployment-outputs.txt" ]; then
-    echo -e "\n${YELLOW}Loading deployment outputs...${NC}"
-    source deployment-outputs.txt
-else
-    echo -e "${RED}❌ deployment-outputs.txt not found. Please run deploy-infrastructure.sh first.${NC}"
-    exit 1
-fi
 
 # Create ECR repositories
 echo -e "\n${YELLOW}Setting up ECR repositories...${NC}"
@@ -96,6 +91,6 @@ echo -e "\n${YELLOW}Next steps:${NC}"
 echo -e "  1. Wait for ECS service to stabilize (check AWS Console)"
 echo -e "  2. Test your application endpoints"
 echo -e "  3. Set up monitoring and alerts"
-echo -e "  4. Configure your domain (if using custom domain)"
 
-cd ../aws-deployment 
+cd ../aws-deployment
+

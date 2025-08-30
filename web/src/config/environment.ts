@@ -24,9 +24,9 @@ const getApiUrl = () => {
     console.log('Using localhost API URL');
     return 'http://localhost:3001/api';
   } else {
-    // Production - use API subdomain
+    // Production - use CloudFront domain
     console.log('Using production API URL');
-    return 'https://api.proxyc.app/api';
+    return 'https://dizx41dtz85gc.cloudfront.net/api';
   }
 };
 

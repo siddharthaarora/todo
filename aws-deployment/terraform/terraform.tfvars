@@ -1,11 +1,7 @@
-﻿aws_region = "us-east-1"
+aws_region = "us-east-1"
 environment = "production"
-domain_name = "proxyc.app"
+domain_name = ""
 app_image = "todo-app-server:latest"
 app_port = 3000
 app_count = 2
 health_check_path = "/health"
-mongodb_uri = "placeholder"
-jwt_secret = "placeholder"
-google_client_id = "placeholder"
-google_client_secret = "placeholder"

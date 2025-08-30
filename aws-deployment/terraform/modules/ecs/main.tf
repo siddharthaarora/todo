@@ -45,7 +45,7 @@ resource "aws_ecs_task_definition" "app" {
         },
         {
           name  = "CLIENT_URL"
-          value = "https://proxyc.app"
+          value = "https://dizx41dtz85gc.cloudfront.net"
         }
       ]
 

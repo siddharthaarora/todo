@@ -22,8 +22,6 @@ const app = express();
 // CORS configuration
 app.use((req, res, next) => {
   const allowedOrigins = [
-    'https://proxyc.app',
-    'https://www.proxyc.app',
     'http://localhost:3000',
     'https://dizx41dtz85gc.cloudfront.net'
   ];
@@ -59,7 +57,7 @@ app.use(passport.initialize());
 configurePassport();
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 

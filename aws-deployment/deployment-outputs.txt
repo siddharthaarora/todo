@@ -1,4 +1,4 @@
-﻿ALB_DNS_NAME=production-alb-1629828006.us-east-1.elb.amazonaws.com
+ALB_DNS_NAME=production-alb-1629828006.us-east-1.elb.amazonaws.com
 CLOUDFRONT_DOMAIN=dizx41dtz85gc.cloudfront.net
 S3_BUCKET_NAME=production-todo-app-static-mngq5kti
 ECS_CLUSTER_NAME=production-cluster
